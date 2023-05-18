@@ -15,6 +15,7 @@
     "tsc": "tsc --pretty --noEmit"
   },
   "dependencies": {
+    "@studio-freight/lenis": "^1.0.12",
     "clsx": "^1.2.1",
     "mousetrap": "1.6.5",
     "next": "^13.4.2",
@@ -46,7 +47,6 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "next-sitemap": "^4.0.9",
-    "next-transpile-modules": "^10.0.0",
     "prettier": "^2.8.8",
     "sass": "^1.62.1",
     "stylelint": "^15.6.2",

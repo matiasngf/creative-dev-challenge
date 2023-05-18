@@ -2,7 +2,8 @@
 
 import React, { useEffect } from 'react'
 
-import { useAppStore } from '~/context/use-app-store'
+import { useFontsStore } from '~/context/use-fonts-loaded'
+import { useLenis } from '~/hooks/use-lenis'
 import {
   basementLog,
   gaTrackingId,
@@ -24,6 +25,10 @@ export const AppHooks = () => {
   useOverflowDebuggerInDev()
   useUserIsTabbing()
   useFontsLoaded()
+  useLenis({
+    lerp: 0.1,
+    smoothWheel: true
+  })
 
   return gaTrackingId ? <GAScripts /> : null
 }
@@ -76,7 +81,7 @@ const useFontsLoaded = () => {
 
     function onReady() {
       window.clearTimeout(timeout)
-      useAppStore.setState({ fontsLoaded: true })
+      useFontsStore.setState({ fontsLoaded: true })
       document.documentElement.classList.add('fonts-loaded')
     }
 
