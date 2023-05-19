@@ -26,8 +26,10 @@ export const AppHooks = () => {
   useUserIsTabbing()
   useFontsLoaded()
   useLenis({
-    lerp: 0.1,
-    smoothWheel: true
+    lerp: 0.05,
+    wheelMultiplier: 0.8,
+    smoothWheel: true,
+    normalizeWheel: true
   })
 
   return gaTrackingId ? <GAScripts /> : null
