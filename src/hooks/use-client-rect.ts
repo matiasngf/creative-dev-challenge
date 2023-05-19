@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { useScrollStore } from '~/context/use-scroll'
 
@@ -12,7 +12,7 @@ export interface ClientRect {
 }
 
 export function useClientRect<T extends HTMLDivElement>(el: T): ClientRect {
-  const [rect, setRect] = useState<Omit<DOMRect, 'toJSON'>>({
+  const rectRef = useRef<Omit<DOMRect, 'toJSON'>>({
     top: 0,
     left: 0,
     width: 0,
@@ -22,6 +22,8 @@ export function useClientRect<T extends HTMLDivElement>(el: T): ClientRect {
     bottom: 0,
     right: 0
   })
+
+  const [rect, setRect] = useState<Omit<DOMRect, 'toJSON'>>(rectRef.current)
   const yScroll = useScrollStore((s) => s.yScroll)
 
   useEffect(() => {
@@ -33,11 +35,12 @@ export function useClientRect<T extends HTMLDivElement>(el: T): ClientRect {
       if (aborted || !el) return
       const currentRect = el.getBoundingClientRect()
       if (
-        rect.top !== currentRect.top ||
-        rect.left !== currentRect.left ||
-        rect.width !== currentRect.width ||
-        rect.height !== currentRect.height
+        rectRef.current.top !== currentRect.top ||
+        rectRef.current.left !== currentRect.left ||
+        rectRef.current.width !== currentRect.width ||
+        rectRef.current.height !== currentRect.height
       ) {
+        rectRef.current = currentRect
         setRect(currentRect)
       }
       requestAnimationFrame(callback)
