@@ -1,6 +1,6 @@
-import Image from 'next/image'
 import React, { CSSProperties } from 'react'
 
+import { ThreeImage } from '~/components/common/three-image'
 import { Container } from '~/components/layout/container'
 
 import s from './gallery.module.scss'
@@ -35,7 +35,7 @@ export const Gallery = () => {
     <Container as="section" className={s.container}>
       {images.map((image, index) => (
         <div key={index} className={s.imageContainer} style={image.style}>
-          <Image
+          <ThreeImage
             alt="basement-team"
             fill
             priority
