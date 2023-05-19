@@ -1,9 +1,10 @@
 'use client'
 
 import Image, { ImageProps } from 'next/image'
-import { useEffect, useId, useRef } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 
 import { useTrackedStore } from '~/context/use-tracked'
+import { useSmooth } from '~/hooks/use-smooth'
 
 export interface ThreeImageProps extends ImageProps {
   vertexShader?: string
@@ -21,6 +22,9 @@ export const ThreeImage = ({
 
   const trackElement = useTrackedStore((s) => s.trackElement)
   const untrackElement = useTrackedStore((s) => s.untrackElement)
+  const updateUniforms = useTrackedStore((s) => s.updateUniforms)
+  const [hovered, hover] = useState(false)
+  const smoothHovered = useSmooth(+hovered, 0.05)
 
   useEffect(() => {
     if (ref.current) {
@@ -30,7 +34,10 @@ export const ThreeImage = ({
         el: ref.current,
         vertexShader,
         fragmentShader,
-        autoAdd: true
+        autoAdd: true,
+        uniforms: {
+          hover: 0
+        }
       })
       return () => {
         untrackElement(id)
@@ -38,9 +45,23 @@ export const ThreeImage = ({
     }
   }, [id, ref, trackElement, untrackElement, vertexShader, fragmentShader])
 
+  useEffect(() => {
+    if (!ref.current) return
+    updateUniforms(id, {
+      hover: smoothHovered
+    })
+  }, [id, smoothHovered, updateUniforms])
+
   return (
     <>
       <Image
+        onPointerMove={(e) => {
+          // const x = e.nativeEvent.offsetX
+          // const y = e.nativeEvent.offsetY - e.target.offsetTop - 100
+          // fRef.current.style.transform = `translate3d(${x}px,${y}px,0)`
+        }}
+        onPointerOver={() => hover(true)}
+        onPointerOut={() => hover(false)}
         ref={ref}
         style={{
           ...style,

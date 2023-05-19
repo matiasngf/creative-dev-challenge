@@ -29,6 +29,7 @@ export interface ThreePortalStore {
   }
   trackElement: (element: TrackedHtml) => void
   untrackElement: (id: string) => void
+  updateUniforms: (id: string, uniforms: TrackedHtml['uniforms']) => void
 }
 
 export const useTrackedStore = create<ThreePortalStore>((set) => ({
@@ -51,6 +52,20 @@ export const useTrackedStore = create<ThreePortalStore>((set) => ({
       return {
         ...state,
         trackedElements: rest
+      }
+    })
+  },
+  updateUniforms: (id, uniforms) => {
+    set((state) => {
+      return {
+        ...state,
+        trackedElements: {
+          ...state.trackedElements,
+          [id]: {
+            ...(state.trackedElements[id] as TrackedHtml),
+            uniforms
+          }
+        }
       }
     })
   }
