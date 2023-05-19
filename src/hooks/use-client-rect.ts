@@ -11,7 +11,9 @@ export interface ClientRect {
   absoluteLeft: number
 }
 
-export function useClientRect<T extends HTMLDivElement>(el: T): ClientRect {
+export function useClientRect<T extends HTMLDivElement | undefined>(
+  el: T
+): ClientRect {
   const rectRef = useRef<Omit<DOMRect, 'toJSON'>>({
     top: 0,
     left: 0,

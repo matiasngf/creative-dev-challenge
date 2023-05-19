@@ -1,3 +1,5 @@
+'use client'
+
 import Lenis from '@studio-freight/lenis'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -8,6 +10,10 @@ import { useScrollStore } from '~/context/use-scroll'
 type LenisOptions = ConstructorParameters<typeof Lenis>[0]
 
 export const useLenis = (options: LenisOptions = {}) => {
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger)
+  }, [])
+
   const setYScroll = useScrollStore((state) => state.setYScroll)
 
   const stringifyOptions = JSON.stringify(options)

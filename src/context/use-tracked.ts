@@ -10,7 +10,7 @@ interface BaseTrackedElement {
 
 export interface TrackedDiv extends BaseTrackedElement {
   type: 'div'
-  el: HTMLElement
+  el: HTMLDivElement
 }
 
 export interface TrackedImage extends BaseTrackedElement {
