@@ -1,14 +1,15 @@
 import { useFrame, useLoader } from '@react-three/fiber'
-import { useEffect, useMemo, useRef } from 'react'
+import { useRef } from 'react'
 import { TextureLoader } from 'three'
 
 import type { TrackedImage } from '~/context/use-tracked'
 import { useClientRect } from '~/hooks/use-client-rect'
+import { useUniforms } from '~/hooks/use-uniforms'
 
 export const ThreeImageRenderer = ({
   id,
   el,
-  uniforms = {},
+  uniforms: inputUniforms = {},
   vertexShader,
   fragmentShader
 }: TrackedImage) => {
@@ -16,32 +17,17 @@ export const ThreeImageRenderer = ({
   const rect = useClientRect(el)
   const [imageTexture] = useLoader(TextureLoader, [el.src])
 
-  const uniformsObject = useMemo(() => {
-    const u = {
-      uTime: { value: 0 },
-      imageTexture: { value: imageTexture }
-    }
-    Object.entries(uniforms).forEach(([key, value]) => {
-      ;(u as any)[key] = { value }
-    })
-    return u
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  const uniformsRef = useRef(uniformsObject)
-
-  useFrame((_, delta) => {
-    uniformsRef.current.uTime.value += delta
+  const [uniforms, updateUniforms] = useUniforms({
+    uTime: 0,
+    imageTexture,
+    ...inputUniforms
   })
 
-  useEffect(() => {
-    if (uniforms) {
-      Object.entries(uniforms).forEach(([key, value]) => {
-        if (!(key in uniformsRef.current)) return
-        ;(uniformsRef.current as any)[key].value = value
-      })
-    }
-  }, [uniforms])
+  useFrame((_, delta) => {
+    updateUniforms({
+      uTime: uniforms.uTime.value + delta
+    })
+  })
 
   return (
     <mesh
@@ -57,7 +43,7 @@ export const ThreeImageRenderer = ({
       <shaderMaterial
         vertexShader={vertexShader || defaultVertexShader}
         fragmentShader={fragmentShader || defaultFragmentShader}
-        uniforms={uniformsRef.current}
+        uniforms={uniforms}
       />
     </mesh>
   )
