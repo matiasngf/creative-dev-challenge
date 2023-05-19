@@ -1,19 +1,30 @@
-'use-client'
+'use client'
 
-import { PropsWithChildren, useEffect, useRef, useState } from 'react'
+import {
+  DetailedHTMLProps,
+  HTMLAttributes,
+  PropsWithChildren,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 
 import { useTrackedStore } from '~/context/use-tracked'
 import { useSmooth } from '~/hooks/use-smooth'
 
-export interface TrackedDivProps {
+export interface TrackedDivProps
+  extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   id: string
   smoothHover?: number
+  debug?: boolean
 }
 
 export const TrackedDiv = ({
   id,
   children,
-  smoothHover = 0.05
+  debug,
+  smoothHover = 0.05,
+  ...props
 }: PropsWithChildren<TrackedDivProps>) => {
   const ref = useRef<HTMLImageElement>(null)
 
@@ -47,8 +58,17 @@ export const TrackedDiv = ({
   }, [id, smoothHovered, updateUniforms])
 
   return (
-    <div onPointerOver={() => hover(true)} onPointerOut={() => hover(false)}>
-      {children} {smoothHovered.toFixed(2)}
+    <div
+      id={id}
+      style={{
+        border: debug ? '1px solid red' : ''
+      }}
+      ref={ref}
+      onPointerOver={() => hover(true)}
+      onPointerOut={() => hover(false)}
+      {...props}
+    >
+      {children}
     </div>
   )
 }
