@@ -6,6 +6,7 @@ import { FallingCaps } from './sections/falling-caps'
 import { FooterGallery } from './sections/footer-gallery'
 import { Gallery } from './sections/gallery'
 import { Hero } from './sections/hero'
+import { Awwward } from './sections/hero/awward'
 
 const HomePage = () => {
   return (
@@ -14,7 +15,9 @@ const HomePage = () => {
       <Gallery />
       <FallingCaps />
       <FooterGallery />
-      <AppCanvas />
+      <AppCanvas>
+        <Awwward />
+      </AppCanvas>
     </>
   )
 }
