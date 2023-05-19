@@ -8,8 +8,8 @@ interface BaseTrackedElement {
   }
 }
 
-export interface TrackedElement extends BaseTrackedElement {
-  type: 'element'
+export interface TrackedDiv extends BaseTrackedElement {
+  type: 'div'
   el: HTMLElement
 }
 
@@ -21,7 +21,7 @@ export interface TrackedImage extends BaseTrackedElement {
   vertexShader?: string
 }
 
-export type TrackedHtml = TrackedElement | TrackedImage
+export type TrackedHtml = TrackedDiv | TrackedImage
 
 export interface ThreePortalStore {
   trackedElements: {
@@ -71,8 +71,8 @@ export const useTrackedStore = create<ThreePortalStore>((set) => ({
   }
 }))
 
-export const useTrackedElement = (id: string) => {
-  return useTrackedStore((s) => s.trackedElements[id])
+export const useTrackedElement = <T = TrackedHtml>(id: string) => {
+  return useTrackedStore((s) => s.trackedElements[id]) as T | undefined
 }
 
 export const useTrackedGroup = (group: string) => {
