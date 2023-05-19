@@ -28,6 +28,7 @@ export interface ThreePortalStore {
     [key: string]: TrackedHtml
   }
   trackElement: (element: TrackedHtml) => void
+  untrackElement: (id: string) => void
 }
 
 export const useTrackedStore = create<ThreePortalStore>((set) => ({
@@ -40,6 +41,16 @@ export const useTrackedStore = create<ThreePortalStore>((set) => ({
           ...state.trackedElements,
           [element.id]: element
         }
+      }
+    })
+  },
+  untrackElement: (id) => {
+    set((state) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [id]: _, ...rest } = state.trackedElements
+      return {
+        ...state,
+        trackedElements: rest
       }
     })
   }

@@ -20,6 +20,7 @@ export const ThreeImage = ({
   const ref = useRef<HTMLImageElement>(null)
 
   const trackElement = useTrackedStore((s) => s.trackElement)
+  const untrackElement = useTrackedStore((s) => s.untrackElement)
 
   useEffect(() => {
     if (ref.current) {
@@ -31,8 +32,11 @@ export const ThreeImage = ({
         fragmentShader,
         autoAdd: true
       })
+      return () => {
+        untrackElement(id)
+      }
     }
-  }, [id, ref, trackElement, vertexShader, fragmentShader])
+  }, [id, ref, trackElement, untrackElement, vertexShader, fragmentShader])
 
   return (
     <>
