@@ -1,16 +1,18 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 
-type Uniforms<T extends Input> = {
-  [key in keyof T]: {
-    value: T[key]
-  }
+export interface Uniform<T = unknown> {
+  value: T
 }
 
-interface Input {
-  [key: string]: unknown
+export type Uniforms<T = object> = {
+  [K in keyof T]: Uniform<T[K]>
 }
 
-export const useUniforms = <T extends Input>(state: T) => {
+// interface Input {
+//   [key: string]: unknown
+// }
+
+export const useUniforms = <T extends object>(state: T) => {
   // create initial state
   const uniformsObject = useMemo(() => {
     const u = {} as Uniforms<T>
@@ -29,11 +31,6 @@ export const useUniforms = <T extends Input>(state: T) => {
       ;(uniformsRef.current as any)[key].value = value
     })
   }, [])
-
-  // update ref
-  useEffect(() => {
-    updateUniforms(state)
-  }, [state, updateUniforms])
 
   return [uniformsRef.current, updateUniforms] as const
 }
