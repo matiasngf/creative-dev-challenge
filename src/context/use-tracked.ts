@@ -71,12 +71,14 @@ export const useTrackedStore = create<ThreePortalStore>((set) => ({
   }
 }))
 
-export const useTrackedElement = <T = TrackedHtml>(id: string) => {
+export const useTrackedElement = <T extends TrackedHtml>(id: string) => {
   return useTrackedStore((s) => s.trackedElements[id]) as T | undefined
 }
 
-export const useTrackedGroup = (group: string) => {
+export const useTrackedGroup = <T extends TrackedHtml>(group: string) => {
   return useTrackedStore((s) => {
-    return Object.values(s.trackedElements).filter((el) => el.group === group)
+    return Object.values(s.trackedElements).filter(
+      (el) => el.group === group
+    ) as T[]
   })
 }
