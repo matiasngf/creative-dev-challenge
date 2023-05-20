@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react'
 
 import { ThreeImageRenderer } from '~/components/common/three-image/renderer'
-import { TrackedImage, useTrackedStore } from '~/context/use-tracked'
+import { TrackedImage, useTrackedStoreDeprecated } from '~/context/use-tracked'
 
 import { SceneCamera } from './scene-camera'
 
@@ -18,7 +18,7 @@ export const PrimaryScene = ({ children }: { children: ReactNode }) => {
 }
 
 const AutoImages = () => {
-  const images = useTrackedStore((s) =>
+  const images = useTrackedStoreDeprecated((s) =>
     Object.values(s.trackedElements).filter(
       (e) => e.type === 'image' && e.autoAdd
     )

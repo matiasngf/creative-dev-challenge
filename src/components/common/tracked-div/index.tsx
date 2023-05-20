@@ -9,7 +9,7 @@ import {
   useState
 } from 'react'
 
-import { TrackedHtml, useTrackedStore } from '~/context/use-tracked'
+import { TrackedHtml, useTrackedStoreDeprecated } from '~/context/use-tracked'
 import { useSmooth } from '~/hooks/use-smooth'
 
 export interface TrackedDivProps
@@ -33,9 +33,9 @@ export const TrackedDiv = ({
 }: PropsWithChildren<TrackedDivProps>) => {
   const ref = useRef<HTMLImageElement>(null)
 
-  const trackElement = useTrackedStore((s) => s.trackElement)
-  const untrackElement = useTrackedStore((s) => s.untrackElement)
-  const updateUniforms = useTrackedStore((s) => s.updateUniforms)
+  const trackElement = useTrackedStoreDeprecated((s) => s.trackElement)
+  const untrackElement = useTrackedStoreDeprecated((s) => s.untrackElement)
+  const updateUniforms = useTrackedStoreDeprecated((s) => s.updateUniforms)
   const [hovered, hover] = useState(false)
   const smoothHovered = useSmooth(+hovered, smoothHover)
 

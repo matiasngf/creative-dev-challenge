@@ -3,7 +3,7 @@
 import Image, { ImageProps } from 'next/image'
 import { useEffect, useId, useRef, useState } from 'react'
 
-import { useTrackedStore } from '~/context/use-tracked'
+import { useTrackedStoreDeprecated } from '~/context/use-tracked'
 import { useSmooth } from '~/hooks/use-smooth'
 
 export interface ThreeImageProps extends ImageProps {
@@ -20,9 +20,9 @@ export const ThreeImage = ({
   const id = useId()
   const ref = useRef<HTMLImageElement>(null)
 
-  const trackElement = useTrackedStore((s) => s.trackElement)
-  const untrackElement = useTrackedStore((s) => s.untrackElement)
-  const updateUniforms = useTrackedStore((s) => s.updateUniforms)
+  const trackElement = useTrackedStoreDeprecated((s) => s.trackElement)
+  const untrackElement = useTrackedStoreDeprecated((s) => s.untrackElement)
+  const updateUniforms = useTrackedStoreDeprecated((s) => s.updateUniforms)
   const [hovered, hover] = useState(false)
   const smoothHovered = useSmooth(+hovered, 0.05)
 

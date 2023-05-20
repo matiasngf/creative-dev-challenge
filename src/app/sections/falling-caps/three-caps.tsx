@@ -51,8 +51,6 @@ export const ThreeCap = ({ el }: TrackedDiv) => {
 
     const triggerEl = document.getElementById('#capsContainer')
 
-    console.log(triggerEl)
-
     gsap.to(groupRef.current.rotation, {
       y: Math.PI * -2,
       scrollTrigger: {

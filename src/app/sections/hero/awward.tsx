@@ -6,7 +6,7 @@ import { useEffect, useRef } from 'react'
 import type { Group, Mesh, MeshStandardMaterial } from 'three'
 import type { GLTF } from 'three-stdlib'
 
-import { TrackedDiv, useTrackedElement } from '~/context/use-tracked'
+import { TrackedDiv, useTrackedElementDeprecated } from '~/context/use-tracked'
 import { useClientRect } from '~/hooks/use-client-rect'
 
 interface AwwardGLTF extends GLTF {
@@ -26,7 +26,7 @@ useGLTF.preload('/models/awwwards.glb')
 
 export const Awwward = () => {
   const { nodes } = useGLTF('/models/awwwards.glb') as AwwardGLTF
-  const tracked = useTrackedElement<TrackedDiv>('awwward')
+  const tracked = useTrackedElementDeprecated<TrackedDiv>('awwward')
   const rect = useClientRect(tracked?.el)
   const groupRef = useRef<Group>(null)
 

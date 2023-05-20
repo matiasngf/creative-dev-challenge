@@ -32,7 +32,7 @@ export interface ThreePortalStore {
   updateUniforms: (id: string, uniforms: TrackedHtml['uniforms']) => void
 }
 
-export const useTrackedStore = create<ThreePortalStore>((set) => ({
+export const useTrackedStoreDeprecated = create<ThreePortalStore>((set) => ({
   trackedElements: {},
   trackElement: (element) => {
     set((state) => {
@@ -71,12 +71,16 @@ export const useTrackedStore = create<ThreePortalStore>((set) => ({
   }
 }))
 
-export const useTrackedElement = <T extends TrackedHtml>(id: string) => {
-  return useTrackedStore((s) => s.trackedElements[id]) as T | undefined
+export const useTrackedElementDeprecated = <T extends TrackedHtml>(
+  id: string
+) => {
+  return useTrackedStoreDeprecated((s) => s.trackedElements[id]) as
+    | T
+    | undefined
 }
 
 export const useTrackedGroup = <T extends TrackedHtml>(group: string) => {
-  return useTrackedStore((s) => {
+  return useTrackedStoreDeprecated((s) => {
     return Object.values(s.trackedElements).filter(
       (el) => el.group === group
     ) as T[]
