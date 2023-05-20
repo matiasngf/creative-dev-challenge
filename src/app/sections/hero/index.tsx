@@ -22,7 +22,7 @@ export const Hero = () => {
         </p>
       </Marquee>
       <div className={s.awwward}>
-        <TrackedDiv id="awwward"></TrackedDiv>
+        <TrackedDiv id="awwward" />
       </div>
     </Container>
   )

@@ -3,6 +3,7 @@
 import { Center, Float, Resize, useGLTF } from '@react-three/drei'
 import { gsap } from 'gsap'
 import { useEffect, useRef } from 'react'
+import type { Group, Mesh, MeshStandardMaterial } from 'three'
 import type { GLTF } from 'three-stdlib'
 
 import { TrackedDiv, useTrackedElement } from '~/context/use-tracked'
@@ -10,14 +11,14 @@ import { useClientRect } from '~/hooks/use-client-rect'
 
 interface AwwardGLTF extends GLTF {
   nodes: {
-    Cube001: THREE.Mesh
-    Cube001_1: THREE.Mesh
-    Scene: THREE.Group
-    Awwwards: THREE.Group
+    Cube001: Mesh
+    Cube001_1: Mesh
+    Scene: Group
+    Awwwards: Group
   }
   materials: {
-    m_Trophy3: THREE.MeshStandardMaterial
-    m_Outline: THREE.MeshStandardMaterial
+    m_Trophy3: MeshStandardMaterial
+    m_Outline: MeshStandardMaterial
   }
 }
 
@@ -27,7 +28,7 @@ export const Awwward = () => {
   const { nodes } = useGLTF('/models/awwwards.glb') as AwwardGLTF
   const tracked = useTrackedElement<TrackedDiv>('awwward')
   const rect = useClientRect(tracked?.el)
-  const groupRef = useRef<THREE.Group>(null)
+  const groupRef = useRef<Group>(null)
 
   useEffect(() => {
     if (!groupRef.current) return
@@ -59,13 +60,9 @@ export const Awwward = () => {
       >
         <Float rotationIntensity={0.5} floatIntensity={0.2}>
           <Center>
-            <group>
-              <Resize>
-                <group>
-                  <primitive object={nodes.Awwwards} />
-                </group>
-              </Resize>
-            </group>
+            <Resize>
+              <primitive object={nodes.Awwwards} />
+            </Resize>
           </Center>
         </Float>
       </group>
