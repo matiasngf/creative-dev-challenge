@@ -75,10 +75,9 @@ const Cap = () => {
     <div ref={elRef}>
       <ThreePortal
         element={ThreeCap}
+        props={capProps}
         uniforms={capUniforms}
         updateUniforms={updateUniforms}
-        props={capProps}
-        setProps={setCapProps}
       />
     </div>
 
