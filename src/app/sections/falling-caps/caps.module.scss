@@ -1,12 +1,18 @@
 @import '~/css/helpers';
 
+.scrollContainer {
+  position: relative;
+  height: 300vh;
+}
+
 .container {
   @include respond-to('tablet') {
     height: 60vh;
   }
 
   display: flex;
-  position: relative;
+  position: sticky;
+  top: 0;
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -39,5 +45,6 @@
 
     position: absolute;
     width: tovw(320px, 220px, 'desktop');
+    aspect-ratio: 1 / 1;
   }
 }
