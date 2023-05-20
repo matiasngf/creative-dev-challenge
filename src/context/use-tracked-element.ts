@@ -9,7 +9,7 @@ export interface BaseTrackedElement<
   id: string
   group?: string
   props: TrackedProps extends object ? TrackedProps : undefined
-  uniforms: TrackedUniforms
+  uniforms: Uniforms<TrackedUniforms>
   /** If uniforms are defined, this will be typed */
   updateUniforms: TrackedUniforms extends Uniforms
     ? (uniforms: Partial<TrackedUniforms>) => void
@@ -38,7 +38,9 @@ export interface ThreePortalStore {
   trackedElements: {
     [key: string]: TrackedElement
   }
-  trackElement: (element: TrackedElement) => void
+  trackElement: <P = unknown, T = unknown>(
+    element: TrackedElement<P, T>
+  ) => void
   untrackElement: (id: string) => void
   updateProps: (id: string, props: TrackedElement['props']) => void
 }
@@ -53,7 +55,7 @@ export const useTrackerStore = create<ThreePortalStore>((set) => ({
           ...state.trackedElements,
           [element.id]: element
         }
-      }
+      } as any
     })
   },
   untrackElement: (id) => {
