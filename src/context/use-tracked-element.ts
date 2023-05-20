@@ -1,14 +1,38 @@
-import { useState } from 'react'
 import { create } from 'zustand'
 
-import { Uniforms, useUniforms } from '~/hooks/use-uniforms'
+import type { Uniforms } from '~/hooks/use-uniforms'
 
-export interface TrackedElement<P = unknown, U = unknown> {
+export interface BaseTrackedElement<
+  TrackedProps = unknown,
+  TrackedUniforms = unknown
+> {
   id: string
   group?: string
-  uniforms?: Uniforms<U>
-  props?: P
+  props: TrackedProps extends object ? TrackedProps : undefined
+  uniforms: TrackedUniforms
+  /** If uniforms are defined, this will be typed */
+  updateUniforms: TrackedUniforms extends Uniforms
+    ? (uniforms: Partial<TrackedUniforms>) => void
+    : undefined
+  autoAdd?: boolean
 }
+
+export type WithRenderer<
+  InputP,
+  InputU,
+  Tracker extends BaseTrackedElement<InputP, InputU>
+> = Tracker & {
+  renderer?: (props: Tracker) => JSX.Element
+}
+
+export type TrackedElement<
+  TrackedProps extends object | unknown = unknown,
+  TrackedUniforms extends object | unknown = unknown
+> = WithRenderer<
+  TrackedProps,
+  TrackedUniforms,
+  BaseTrackedElement<TrackedProps, TrackedUniforms>
+>
 
 export interface ThreePortalStore {
   trackedElements: {
@@ -57,32 +81,3 @@ export const useTrackerStore = create<ThreePortalStore>((set) => ({
     })
   }
 }))
-
-export interface UseTrackedElementOptions<
-  InputProps extends object,
-  InputUniforms extends Uniforms
-> {
-  id: string
-  group?: string
-  props?: InputProps
-  uniforms?: InputUniforms
-}
-
-export const useTrackedElement = <
-  InputProps extends object,
-  InputUniforms extends object
->({
-  props = {} as InputProps,
-  uniforms = {} as InputUniforms
-}: UseTrackedElementOptions<InputProps, InputUniforms>) => {
-  const [cProps, setCProps] = useState(props)
-  const [cUniforms, updateCUniforms] = useUniforms(uniforms)
-  // TODO: use the store
-
-  return {
-    props: cProps,
-    updateProps: setCProps,
-    uniforms: cUniforms,
-    updateUniforms: updateCUniforms
-  }
-}
