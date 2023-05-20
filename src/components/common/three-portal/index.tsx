@@ -9,7 +9,7 @@ export type ThreePortalProps<P, U> = Omit<
   'props' | 'uniforms'
 > & {
   uniforms?: U
-  props?: P
+  props: P
   children?: TrackedElement<P, U>['renderer']
 }
 

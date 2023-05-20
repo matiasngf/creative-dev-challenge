@@ -1,7 +1,7 @@
 import { useLoader } from '@react-three/fiber'
 import { TextureLoader } from 'three'
 
-import type { TrackerElementProps } from '~/context/use-tracked-element'
+import type { TrackerRendererProps } from '~/context/use-tracked-element'
 import type { Uniforms } from '~/hooks/use-uniforms'
 
 import type { ImagePortalProps, ImagePortalUniforms } from '.'
@@ -9,7 +9,7 @@ import type { ImagePortalProps, ImagePortalUniforms } from '.'
 export const ImageRenderer = ({
   props,
   uniforms
-}: TrackerElementProps<ImagePortalProps, Uniforms<ImagePortalUniforms>>) => {
+}: TrackerRendererProps<ImagePortalProps, Uniforms<ImagePortalUniforms>>) => {
   const { rect, vertexShader, fragmentShader, imgSrc } = props
 
   const [imageTexture] = useLoader(TextureLoader, [imgSrc])

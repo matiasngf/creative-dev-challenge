@@ -72,12 +72,6 @@ export const ThreeImage = ({
     <>
       <Image
         src={src}
-        onPointerMove={(_e) => {
-          // TODO: add mouse tracker
-          // const x = e.nativeEvent.offsetX
-          // const y = e.nativeEvent.offsetY - e.target.offsetTop - 100
-          // fRef.current.style.transform = `translate3d(${x}px,${y}px,0)`
-        }}
         onPointerOver={() => hover(true)}
         onPointerOut={() => hover(false)}
         ref={ref}

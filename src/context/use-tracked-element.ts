@@ -1,9 +1,6 @@
 import { create } from 'zustand'
 
-export interface TrackerElementProps<
-  TrackedProps = unknown,
-  TrackedUniforms = unknown
-> {
+export interface TrackerRendererProps<TrackedProps, TrackedUniforms> {
   id: string
   group?: string
   props: TrackedProps
@@ -11,16 +8,14 @@ export interface TrackerElementProps<
   autoAdd?: boolean
 }
 
-export type TrackerRenderer<
-  InputP,
-  InputU,
-  Tracker = TrackerElementProps<InputP, InputU>
-> = (props: Tracker) => JSX.Element
+export type TrackerRenderer<InputP, InputU> = (
+  props: TrackerRendererProps<InputP, InputU>
+) => JSX.Element
 
 export interface TrackedElement<
   TrackedProps = unknown,
   TrackedUniforms = unknown
-> extends TrackerElementProps<TrackedProps, TrackedUniforms> {
+> extends TrackerRendererProps<TrackedProps, TrackedUniforms> {
   renderer?: TrackerRenderer<TrackedProps, TrackedUniforms>
 }
 
