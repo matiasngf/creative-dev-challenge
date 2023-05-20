@@ -1,38 +1,28 @@
 import { create } from 'zustand'
 
-import type { Uniforms } from '~/hooks/use-uniforms'
-
-export interface BaseTrackedElement<
+export interface TrackerElementProps<
   TrackedProps = unknown,
   TrackedUniforms = unknown
 > {
   id: string
   group?: string
-  props: TrackedProps extends object ? TrackedProps : undefined
-  uniforms: Uniforms<TrackedUniforms>
-  /** If uniforms are defined, this will be typed */
-  updateUniforms: TrackedUniforms extends Uniforms
-    ? (uniforms: Partial<TrackedUniforms>) => void
-    : undefined
+  props: TrackedProps
+  uniforms: TrackedUniforms
   autoAdd?: boolean
 }
 
-export type WithRenderer<
+export type TrackerRenderer<
   InputP,
   InputU,
-  Tracker extends BaseTrackedElement<InputP, InputU>
-> = Tracker & {
-  renderer?: (props: Tracker) => JSX.Element
-}
+  Tracker = TrackerElementProps<InputP, InputU>
+> = (props: Tracker) => JSX.Element
 
-export type TrackedElement<
-  TrackedProps extends object | unknown = unknown,
-  TrackedUniforms extends object | unknown = unknown
-> = WithRenderer<
-  TrackedProps,
-  TrackedUniforms,
-  BaseTrackedElement<TrackedProps, TrackedUniforms>
->
+export interface TrackedElement<
+  TrackedProps = unknown,
+  TrackedUniforms = unknown
+> extends TrackerElementProps<TrackedProps, TrackedUniforms> {
+  renderer?: TrackerRenderer<TrackedProps, TrackedUniforms>
+}
 
 export interface ThreePortalStore {
   trackedElements: {
@@ -43,6 +33,7 @@ export interface ThreePortalStore {
   ) => void
   untrackElement: (id: string) => void
   updateProps: (id: string, props: TrackedElement['props']) => void
+  updateRenderer: (id: string, renderer: TrackedElement['renderer']) => void
 }
 
 export const useTrackerStore = create<ThreePortalStore>((set) => ({
@@ -77,6 +68,20 @@ export const useTrackerStore = create<ThreePortalStore>((set) => ({
           [id]: {
             ...(state.trackedElements[id] as TrackedElement),
             props
+          }
+        }
+      }
+    })
+  },
+  updateRenderer: (id, renderer) => {
+    set((state) => {
+      return {
+        ...state,
+        trackedElements: {
+          ...state.trackedElements,
+          [id]: {
+            ...(state.trackedElements[id] as TrackedElement),
+            renderer
           }
         }
       }

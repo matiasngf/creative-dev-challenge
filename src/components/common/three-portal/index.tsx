@@ -1,41 +1,45 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 
 import { TrackedElement, useTrackerStore } from '~/context/use-tracked-element'
-import type { Uniforms } from '~/hooks/use-uniforms'
 
-export function ThreePortal<
-  P extends object | unknown = unknown,
-  U extends Uniforms | unknown = unknown
->({
+export type ThreePortalProps<P, U> = Omit<
+  TrackedElement<P, U>,
+  'props' | 'uniforms'
+> & {
+  uniforms?: U
+  props?: P
+  children?: TrackedElement<P, U>['renderer']
+}
+
+export function ThreePortal<P = unknown, U = unknown>({
   id,
   group,
   props,
   uniforms,
-  updateUniforms,
   autoAdd,
-  renderer
-}: TrackedElement<P, U>) {
-  const { trackElement, untrackElement, updateProps } = useTrackerStore(
-    (s) => ({
+  renderer,
+  children
+}: ThreePortalProps<P, U>) {
+  const { trackElement, untrackElement, updateProps, updateRenderer } =
+    useTrackerStore((s) => ({
       trackElement: s.trackElement,
       untrackElement: s.untrackElement,
-      updateProps: s.updateProps
-    })
-  )
+      updateProps: s.updateProps,
+      updateRenderer: s.updateRenderer
+    }))
 
-  const portalRenderer = useRef(renderer)
+  const portalRenderer = renderer || children
 
   useEffect(() => {
-    trackElement({
+    trackElement<P, U>({
       id,
       group,
-      props,
-      uniforms,
-      updateUniforms,
+      props: props as P,
+      uniforms: uniforms as U,
       autoAdd,
-      renderer: portalRenderer.current
+      renderer: portalRenderer
     })
     return () => untrackElement(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -44,6 +48,10 @@ export function ThreePortal<
   useEffect(() => {
     updateProps(id, props)
   }, [id, props, updateProps])
+
+  useEffect(() => {
+    updateRenderer(id, portalRenderer as any)
+  }, [id, portalRenderer, updateRenderer])
 
   return null
 }

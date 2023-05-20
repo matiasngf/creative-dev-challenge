@@ -1,19 +1,29 @@
 'use client'
 
-import { useLoader } from '@react-three/fiber'
 import Image, { ImageProps } from 'next/image'
 import { useEffect, useId, useRef, useState } from 'react'
-import { TextureLoader } from 'three'
 
-import { useClientRect } from '~/hooks/use-client-rect'
+import { ClientRect, useClientRect } from '~/hooks/use-client-rect'
 import { useSmooth } from '~/hooks/use-smooth'
 import { useUniforms } from '~/hooks/use-uniforms'
 
 import { ThreePortal } from '../three-portal'
+import { ImageRenderer } from './renderer'
 
 export interface ThreeImageProps extends ImageProps {
   vertexShader?: string
   fragmentShader?: string
+}
+
+export interface ImagePortalProps {
+  vertexShader: string | undefined
+  fragmentShader: string | undefined
+  rect: ClientRect
+  imgSrc: string
+}
+
+export type ImagePortalUniforms = {
+  fHover: number
 }
 
 export const ThreeImage = ({
@@ -43,11 +53,12 @@ export const ThreeImage = ({
       rect,
       imgSrc
     }))
-  }, [rect, imgSrc])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(rect), imgSrc])
 
   const [hovered, hover] = useState(false)
   const smoothHovered = useSmooth(+hovered, 0.05)
-  const [uniforms, updateUniforms] = useUniforms({
+  const [uniforms, updateUniforms] = useUniforms<ImagePortalUniforms>({
     fHover: smoothHovered
   })
   useEffect(() => {
@@ -80,61 +91,9 @@ export const ThreeImage = ({
         id={id}
         props={portalProps}
         uniforms={uniforms}
-        updateUniforms={updateUniforms}
         autoAdd
-        renderer={({ props }) => {
-          const { rect, vertexShader, fragmentShader, imgSrc } = props
-
-          const [imageTexture] = useLoader(TextureLoader, [imgSrc])
-
-          return (
-            <mesh
-              key={id}
-              position={[
-                rect.absoluteLeft + rect.width / 2,
-                -rect.absoluteTop - rect.height / 2,
-                1
-              ]}
-            >
-              <planeGeometry args={[rect.width, rect.height, 126, 126]} />
-              <shaderMaterial
-                vertexShader={vertexShader || defaultVertexShader}
-                fragmentShader={fragmentShader || defaultFragmentShader}
-                uniforms={{
-                  ...uniforms,
-                  imageTexture: { value: imageTexture }
-                }}
-              />
-            </mesh>
-          )
-        }}
+        renderer={ImageRenderer}
       />
     </>
   )
 }
-
-const defaultVertexShader = /* glsl */ `
-
-  varying vec2 vUv;
-
-  void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-  }
-`
-
-const defaultFragmentShader = /* glsl */ `
-  
-  varying vec2 vUv;
-
-  uniform float uTime;
-  uniform float fHover;
-  uniform sampler2D imageTexture;
-
-  void main() {
-    vec3 textureColor = texture2D(imageTexture, vUv).rgb;
-
-    textureColor = mix(textureColor, vec3(1.0, 0.0, 0.0), fHover);
-    gl_FragColor = vec4(textureColor, 1.0);
-  }
-`

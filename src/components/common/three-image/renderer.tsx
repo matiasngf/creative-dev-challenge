@@ -1,38 +1,21 @@
-import { useFrame, useLoader } from '@react-three/fiber'
-import { useRef } from 'react'
+import { useLoader } from '@react-three/fiber'
 import { TextureLoader } from 'three'
 
-import type { TrackedImage } from '~/context/use-tracked'
-import { useClientRect } from '~/hooks/use-client-rect'
-import { useUniforms } from '~/hooks/use-uniforms'
+import type { TrackerElementProps } from '~/context/use-tracked-element'
+import type { Uniforms } from '~/hooks/use-uniforms'
 
-export const ThreeImageRenderer = ({
-  id,
-  el,
-  uniforms: inputUniforms = {},
-  vertexShader,
-  fragmentShader
-}: TrackedImage) => {
-  const ref = useRef(null)
-  const rect = useClientRect(el)
-  const [imageTexture] = useLoader(TextureLoader, [el.src])
+import type { ImagePortalProps, ImagePortalUniforms } from '.'
 
-  const [uniforms, updateUniforms] = useUniforms({
-    uTime: 0,
-    imageTexture,
-    ...inputUniforms
-  })
+export const ImageRenderer = ({
+  props,
+  uniforms
+}: TrackerElementProps<ImagePortalProps, Uniforms<ImagePortalUniforms>>) => {
+  const { rect, vertexShader, fragmentShader, imgSrc } = props
 
-  useFrame((_, delta) => {
-    updateUniforms({
-      uTime: uniforms.uTime.value + delta
-    })
-  })
+  const [imageTexture] = useLoader(TextureLoader, [imgSrc])
 
   return (
     <mesh
-      ref={ref}
-      key={id}
       position={[
         rect.absoluteLeft + rect.width / 2,
         -rect.absoluteTop - rect.height / 2,
@@ -43,7 +26,10 @@ export const ThreeImageRenderer = ({
       <shaderMaterial
         vertexShader={vertexShader || defaultVertexShader}
         fragmentShader={fragmentShader || defaultFragmentShader}
-        uniforms={uniforms}
+        uniforms={{
+          ...uniforms,
+          imageTexture: { value: imageTexture }
+        }}
       />
     </mesh>
   )
@@ -64,13 +50,13 @@ const defaultFragmentShader = /* glsl */ `
   varying vec2 vUv;
 
   uniform float uTime;
-  uniform float hover;
+  uniform float fHover;
   uniform sampler2D imageTexture;
 
   void main() {
     vec3 textureColor = texture2D(imageTexture, vUv).rgb;
 
-    textureColor = mix(textureColor, vec3(1.0, 0.0, 0.0), hover);
+    textureColor = mix(textureColor, vec3(1.0, 0.0, 0.0), fHover);
     gl_FragColor = vec4(textureColor, 1.0);
   }
 `
