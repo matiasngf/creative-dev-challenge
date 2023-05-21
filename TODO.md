@@ -1,5 +1,5 @@
 [x] Automate store in a single component
-[ ] Caps different order
+[x] Caps different order
 [ ] useMouseStore({ position, scale, hoveringElements }) and useMouseController
 [ ] Images shaders (bubble and distort effect)
 [ ] Images illustrations reveal on hover
