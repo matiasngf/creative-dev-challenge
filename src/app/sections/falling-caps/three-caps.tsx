@@ -1,6 +1,7 @@
 'use client'
 
 import { Center, Float, Resize, useGLTF } from '@react-three/drei'
+import { useFrame } from '@react-three/fiber'
 import { gsap } from 'gsap'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Group, Mesh, MeshStandardMaterial } from 'three'
@@ -12,7 +13,7 @@ import { useClientRect } from '~/hooks/use-client-rect'
 import { useUniforms } from '~/hooks/use-uniforms'
 
 import type { Cap } from '.'
-import { capShaderMaterial, StandardShaderMaterial } from './cap-material'
+import { capShaderMaterial } from './cap-material'
 import s from './caps.module.scss'
 
 export interface CapTrackerProps {
@@ -78,7 +79,17 @@ export const CapPortal = ({
   const rect = useClientRect(element)
 
   const [uniforms, updateUniforms] = useUniforms({
-    fReveal: 0
+    fReveal: 0,
+    fTime: 0,
+    vCenter: [0, 0, 0],
+    fSize: 0
+  })
+
+  useFrame(({ clock }) => {
+    updateUniforms({
+      fTime: clock.getElapsedTime(),
+      fSize: rect.width
+    })
   })
 
   // animation config
@@ -87,8 +98,9 @@ export const CapPortal = ({
   const randomX = useMemo(() => (Math.random() - 0.5) * Math.PI * 0.1 + 0.2, [])
   const randomZ = useMemo(() => (Math.random() - 0.5) * Math.PI * 0.05, [])
   const randomStart = useMemo(() => {
-    const min = 50
-    const max = 80
+    const numOfScreens = 4
+    const min = 100 / numOfScreens
+    const max = (100 / numOfScreens) * 3
     return Math.random() * (max - min) + min
   }, [])
 
@@ -107,7 +119,7 @@ export const CapPortal = ({
         scrub: true,
         trigger: triggerEl,
         start: randomStart + '% bottom',
-        end: randomStart + 20 + '% bottom'
+        end: randomStart + 100 / 4 + '% bottom'
       },
       onUpdate: () => {
         updateUniforms({
@@ -146,6 +158,13 @@ export const CapPortal = ({
 
   const centerX = rect.absoluteLeft + rect.width / 2
   const centerY = rect.absoluteTop + rect.height / 2
+  const centerZ = 500
+
+  useEffect(() => {
+    updateUniforms({
+      vCenter: [centerX, -centerY, centerZ]
+    })
+  }, [updateUniforms, centerX, centerY, centerZ])
 
   const padding = 0.6
   const scaleFactor = rect.width * padding * (1 - 0.3 * (1 - progress))
@@ -153,7 +172,7 @@ export const CapPortal = ({
   return (
     <group
       scale={[scaleFactor, scaleFactor, scaleFactor]}
-      position={[centerX, -centerY, 500]}
+      position={[centerX, -centerY, centerZ]}
       rotation={[randomX + 0.3, randomY + 0.3, randomZ]}
       ref={groupRef}
     >
