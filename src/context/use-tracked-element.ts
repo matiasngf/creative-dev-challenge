@@ -10,7 +10,7 @@ export interface TrackerRendererProps<TrackedProps, TrackedUniforms> {
 
 export type TrackerRenderer<InputP, InputU> = (
   props: TrackerRendererProps<InputP, InputU>
-) => JSX.Element
+) => JSX.Element | null
 
 export interface TrackedElement<
   TrackedProps = unknown,
