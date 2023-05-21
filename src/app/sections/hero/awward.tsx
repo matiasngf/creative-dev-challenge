@@ -2,12 +2,39 @@
 
 import { Center, Float, Resize, useGLTF } from '@react-three/drei'
 import { gsap } from 'gsap'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Group, Mesh, MeshStandardMaterial } from 'three'
 import type { GLTF } from 'three-stdlib'
 
-import { TrackedDiv, useTrackedElementDeprecated } from '~/context/use-tracked'
-import { useClientRect } from '~/hooks/use-client-rect'
+import { ThreePortal } from '~/components/common/three-portal'
+import type { TrackerRendererProps } from '~/context/use-tracked-element'
+import { ClientRect, useClientRect } from '~/hooks/use-client-rect'
+
+interface AwwardProps {
+  rect: ClientRect
+}
+
+export const AwwwardTracker = () => {
+  const ref = useRef<HTMLDivElement>(null)
+  const rect = useClientRect(ref.current)
+
+  const [awwardProps, setAwwardProps] = useState<AwwardProps>({
+    rect
+  })
+
+  useEffect(() => {
+    setAwwardProps((s) => ({
+      ...s,
+      rect
+    }))
+  }, [rect])
+
+  return (
+    <div ref={ref}>
+      <ThreePortal props={awwardProps} autoAdd renderer={AwwwardPortal} />
+    </div>
+  )
+}
 
 interface AwwardGLTF extends GLTF {
   nodes: {
@@ -24,10 +51,12 @@ interface AwwardGLTF extends GLTF {
 
 useGLTF.preload('/models/awwwards.glb')
 
-export const Awwward = () => {
+export const AwwwardPortal = ({
+  props
+}: TrackerRendererProps<AwwardProps, undefined>) => {
+  const { rect } = props
+
   const { nodes } = useGLTF('/models/awwwards.glb') as AwwardGLTF
-  const tracked = useTrackedElementDeprecated<TrackedDiv>('awwward')
-  const rect = useClientRect(tracked?.el)
   const groupRef = useRef<Group>(null)
 
   useEffect(() => {
@@ -43,8 +72,6 @@ export const Awwward = () => {
       }
     })
   }, [])
-
-  if (!tracked) return null
 
   const centerX = rect.absoluteLeft + rect.width / 2
   const centerY = rect.absoluteTop + rect.height / 2

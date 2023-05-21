@@ -1,7 +1,7 @@
 'use client'
 
 import Image, { ImageProps } from 'next/image'
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { ClientRect, useClientRect } from '~/hooks/use-client-rect'
 import { useSmooth } from '~/hooks/use-smooth'
@@ -33,7 +33,6 @@ export const ThreeImage = ({
   src,
   ...props
 }: ThreeImageProps) => {
-  const id = useId()
   const ref = useRef<HTMLImageElement>(null)
 
   const imgSrc = src as string
@@ -66,7 +65,7 @@ export const ThreeImage = ({
     updateUniforms({
       fHover: smoothHovered
     })
-  }, [id, smoothHovered, updateUniforms])
+  }, [smoothHovered, updateUniforms])
 
   return (
     <>
@@ -82,7 +81,6 @@ export const ThreeImage = ({
         {...props}
       />
       <ThreePortal
-        id={id}
         props={portalProps}
         uniforms={uniforms}
         autoAdd
