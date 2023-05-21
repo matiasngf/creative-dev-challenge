@@ -25,11 +25,7 @@ export function useClientRect<T extends HTMLElement | null | undefined>(
   })
 
   const [rect, setRect] = useState<ClientRect>(rectRef.current)
-  const yScroll = useScrollStore((s) => s.yScroll)
-  const yScrollRef = useRef(yScroll)
-  useEffect(() => {
-    yScrollRef.current = yScroll
-  }, [yScroll])
+  const yScrollRef = useScrollStore((s) => s.yScrollRef)
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -59,7 +55,7 @@ export function useClientRect<T extends HTMLElement | null | undefined>(
     return () => {
       abortController.abort()
     }
-  }, [el])
+  }, [el, yScrollRef])
 
   return rect
 }
