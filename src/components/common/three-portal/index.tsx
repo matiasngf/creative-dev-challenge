@@ -1,20 +1,21 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useId } from 'react'
 
 import { TrackedElement, useTrackerStore } from '~/context/use-tracked-element'
 
 export type ThreePortalProps<P, U> = Omit<
   TrackedElement<P, U>,
-  'props' | 'uniforms'
+  'props' | 'uniforms' | 'id'
 > & {
+  id?: string
   uniforms?: U
   props: P
   children?: TrackedElement<P, U>['renderer']
 }
 
 export function ThreePortal<P = unknown, U = unknown>({
-  id,
+  id: idInput,
   group,
   props,
   uniforms,
@@ -22,6 +23,9 @@ export function ThreePortal<P = unknown, U = unknown>({
   renderer,
   children
 }: ThreePortalProps<P, U>) {
+  const generatedId = useId()
+  const id = typeof idInput === 'string' ? idInput : generatedId
+
   const { trackElement, untrackElement, updateProps, updateRenderer } =
     useTrackerStore((s) => ({
       trackElement: s.trackElement,
