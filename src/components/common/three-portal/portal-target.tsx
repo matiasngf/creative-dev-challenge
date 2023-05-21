@@ -28,23 +28,9 @@ const PortalTarget = ({ id }: { id: string }) => {
 
   if (!trackedElement) return null
 
-  const {
-    group,
-    props,
-    uniforms,
-    updateUniforms,
-    renderer: Renderer
-  } = trackedElement
+  const { group, props, uniforms, renderer: Renderer } = trackedElement
 
   if (!Renderer) return null
 
-  return (
-    <Renderer
-      id={id}
-      group={group}
-      props={props}
-      uniforms={uniforms}
-      updateUniforms={updateUniforms}
-    />
-  )
+  return <Renderer id={id} group={group} props={props} uniforms={uniforms} />
 }
