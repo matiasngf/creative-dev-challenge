@@ -86,28 +86,44 @@ export const CapPortal = ({
   const randomY = useMemo(() => (Math.random() - 0.5) * Math.PI * 0.2 - 0.3, [])
   const randomX = useMemo(() => (Math.random() - 0.5) * Math.PI * 0.1 + 0.2, [])
   const randomZ = useMemo(() => (Math.random() - 0.5) * Math.PI * 0.05, [])
+  const randomStart = useMemo(() => {
+    const min = 50
+    const max = 80
+    return Math.random() * (max - min) + min
+  }, [])
+
+  const gRef = useRef<gsap.core.Tween | null>(null)
 
   useEffect(() => {
     if (!groupRef.current) return
 
     const triggerEl = document.getElementById('#capsContainer')
-    // const randomRotation = Math.random() * Math.PI * 2
 
-    gsap.to(groupRef.current.rotation, {
+    const g = gsap.to(groupRef.current.rotation, {
       x: randomX,
       y: randomY,
       scrollTrigger: {
         scrub: true,
         trigger: triggerEl,
-        start: 'top top',
-        end: 'bottom bottom'
+        start: randomStart + '% bottom',
+        end: randomStart + 20 + '% bottom'
       }
     })
-  }, [randomY, randomX])
+    gRef.current = g
+
+    return () => {
+      g.kill()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [randomY, randomX, randomStart, groupRef.current])
+
+  const progress = gRef.current?.totalProgress() || 0
 
   const centerX = rect.absoluteLeft + rect.width / 2
   const centerY = rect.absoluteTop + rect.height / 2
-  const scaleFactor = Math.max(rect.width, rect.height) * 1
+
+  const padding = 0.6
+  const scaleFactor = rect.width * padding * (1 - 0.3 * (1 - progress))
 
   return (
     <group
@@ -118,7 +134,7 @@ export const CapPortal = ({
     >
       <Float>
         <Center>
-          <Resize>
+          <Resize width>
             <primitive object={SceneNode} />
           </Resize>
         </Center>
