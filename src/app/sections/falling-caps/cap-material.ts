@@ -25,6 +25,7 @@ export const capShaderMaterial = (uniforms: Uniforms) =>
       ${noise4d1}
     `,
     fragmentShader: /*glsl*/ `
+      // https://www.shadertoy.com/view/cly3WV
       vec3 red = vec3(1.0, 0.0, 0.0);
       vec3 green = vec3(0.0, 1.0, 0.0);
       float borderSize = 5.0;
@@ -35,12 +36,19 @@ export const capShaderMaterial = (uniforms: Uniforms) =>
 
       float noiseDisplacement = fTime * 0.3;
 
-      float noiseFactor = noise4d1(vec4(p.xyz / 20.0, noiseDisplacement)) * 10.0;
+      vec4 noisePosition = vec4(
+        p.x / 20.0,
+        (p.y - vCenter.y) / 20.0,
+        p.z / 20.0,
+        noiseDisplacement
+      );
+
+      float noiseFactor = noise4d1(noisePosition) * 10.0;
       float distance = length(sphereCenter - p) + noiseFactor;
 
       float sdf = distance - sphereRadius;
-      float inside = sdf < 0.0 ? 1.0 : 0.0;
-      float border = sdf < borderSize ? 1.0 : 0.0;
+      float inside = clamp( -sdf / fwidth(sdf), 0., 1. );
+      float border = clamp( (borderSize - sdf) / fwidth(sdf), 0., 1. );
 
       vec3 borderColor = vec3(1.,0.302,0.);
       
