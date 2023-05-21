@@ -72,6 +72,10 @@ interface CapGLTF extends GLTF {
 
 useGLTF.preload('/models/cap.glb')
 
+const smoothRandom = () => {
+  return Math.cos((Math.random() * 0.5 - 0.5) * Math.PI)
+}
+
 export const CapPortal = ({
   props
 }: TrackerRendererProps<CapPortalProps, undefined>) => {
@@ -101,7 +105,7 @@ export const CapPortal = ({
     const numOfScreens = 4
     const min = 100 / numOfScreens
     const max = (100 / numOfScreens) * 3
-    return Math.random() * (max - min) + min
+    return smoothRandom() * (max - min) + min
   }, [])
 
   // tween
