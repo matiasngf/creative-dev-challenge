@@ -3,12 +3,12 @@
 import Image from 'next/image'
 import React, { CSSProperties } from 'react'
 
-import { TrackedDiv } from '~/components/common/tracked-div'
 import { Container } from '~/components/layout/container'
 
 import s from './caps.module.scss'
+import { CapTracker } from './three-caps'
 
-interface Cap {
+export interface Cap {
   left?: string
   top?: string
   right?: string
@@ -129,38 +129,14 @@ export const FallingCaps = () => {
             key={index}
             quality={100}
             src="/assets/Cap.png"
-            style={{ ...style }}
+            style={{ ...style, opacity: 0 }}
             width={509}
           />
         ))}
         {caps.map((cap, index) => (
-          <TrackedCap id={index.toString()} key={index} cap={cap} />
+          <CapTracker key={index} cap={cap} />
         ))}
       </Container>
     </div>
-  )
-}
-
-interface TrackedCapProps {
-  id: string
-  cap: Cap
-}
-
-const TrackedCap = ({ id, cap }: TrackedCapProps) => {
-  return (
-    <TrackedDiv
-      id={`caps-${id}`}
-      debug
-      uniforms={{ ...cap }}
-      group="caps"
-      className={s.cap}
-      style={{
-        left: cap.left,
-        top: cap.top,
-        right: cap.right,
-        bottom: cap.bottom,
-        transform: `scale(${cap.scale})`
-      }}
-    />
   )
 }

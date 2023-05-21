@@ -1,66 +1,76 @@
 'use client'
 
 import Image, { ImageProps } from 'next/image'
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import { useTrackedStore } from '~/context/use-tracked'
+import { ClientRect, useClientRect } from '~/hooks/use-client-rect'
 import { useSmooth } from '~/hooks/use-smooth'
+import { useUniforms } from '~/hooks/use-uniforms'
+
+import { ThreePortal } from '../three-portal'
+import { ImageRenderer } from './renderer'
 
 export interface ThreeImageProps extends ImageProps {
   vertexShader?: string
   fragmentShader?: string
 }
 
+export interface ImagePortalProps {
+  vertexShader: string | undefined
+  fragmentShader: string | undefined
+  rect: ClientRect
+  imgSrc: string
+}
+
+export type ImagePortalUniforms = {
+  fHover: number
+}
+
 export const ThreeImage = ({
   vertexShader,
   fragmentShader,
   style = {},
+  src,
   ...props
 }: ThreeImageProps) => {
-  const id = useId()
   const ref = useRef<HTMLImageElement>(null)
 
-  const trackElement = useTrackedStore((s) => s.trackElement)
-  const untrackElement = useTrackedStore((s) => s.untrackElement)
-  const updateUniforms = useTrackedStore((s) => s.updateUniforms)
+  const imgSrc = src as string
+
+  const rect = useClientRect(ref.current)
+
+  const [portalProps, setPortalProps] = useState({
+    vertexShader,
+    fragmentShader,
+    rect,
+    imgSrc
+  })
+
+  useEffect(() => {
+    setPortalProps((s) => ({
+      ...s,
+      rect,
+      imgSrc
+    }))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(rect), imgSrc])
+
   const [hovered, hover] = useState(false)
   const smoothHovered = useSmooth(+hovered, 0.05)
-
-  useEffect(() => {
-    if (ref.current) {
-      trackElement({
-        id,
-        type: 'image',
-        el: ref.current,
-        vertexShader,
-        fragmentShader,
-        autoAdd: true,
-        uniforms: {
-          hover: 0
-        }
-      })
-      return () => {
-        untrackElement(id)
-      }
-    }
-  }, [id, ref, trackElement, untrackElement, vertexShader, fragmentShader])
-
+  const [uniforms, updateUniforms] = useUniforms<ImagePortalUniforms>({
+    fHover: smoothHovered
+  })
   useEffect(() => {
     if (!ref.current) return
-    updateUniforms(id, {
-      hover: smoothHovered
+    updateUniforms({
+      fHover: smoothHovered
     })
-  }, [id, smoothHovered, updateUniforms])
+  }, [smoothHovered, updateUniforms])
 
   return (
     <>
       <Image
-        onPointerMove={(_e) => {
-          // TODO: add mouse tracker
-          // const x = e.nativeEvent.offsetX
-          // const y = e.nativeEvent.offsetY - e.target.offsetTop - 100
-          // fRef.current.style.transform = `translate3d(${x}px,${y}px,0)`
-        }}
+        src={src}
         onPointerOver={() => hover(true)}
         onPointerOut={() => hover(false)}
         ref={ref}
@@ -69,6 +79,12 @@ export const ThreeImage = ({
           opacity: 0
         }}
         {...props}
+      />
+      <ThreePortal
+        props={portalProps}
+        uniforms={uniforms}
+        autoAdd
+        renderer={ImageRenderer}
       />
     </>
   )

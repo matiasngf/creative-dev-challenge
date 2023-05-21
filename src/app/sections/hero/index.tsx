@@ -3,9 +3,9 @@
 import React from 'react'
 import Marquee from 'react-fast-marquee'
 
-import { TrackedDiv } from '~/components/common/tracked-div'
 import { Container } from '~/components/layout/container'
 
+import { AwwwardTracker } from './awward'
 import s from './hero.module.scss'
 
 export const Hero = () => {
@@ -22,7 +22,7 @@ export const Hero = () => {
         </p>
       </Marquee>
       <div className={s.awwward}>
-        <TrackedDiv id="awwward" />
+        <AwwwardTracker />
       </div>
     </Container>
   )
