@@ -3,14 +3,16 @@
 import { Center, Float, Resize, useGLTF } from '@react-three/drei'
 import { gsap } from 'gsap'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { Group, Mesh, MeshStandardMaterial } from 'three'
+import { Group, Mesh, MeshStandardMaterial } from 'three'
 import type { GLTF } from 'three-stdlib'
 
 import { ThreePortal } from '~/components/common/three-portal'
 import type { TrackerRendererProps } from '~/context/use-tracked-element'
 import { useClientRect } from '~/hooks/use-client-rect'
+import { useUniforms } from '~/hooks/use-uniforms'
 
 import type { Cap } from '.'
+import { capShaderMaterial, StandardShaderMaterial } from './cap-material'
 import s from './caps.module.scss'
 
 export interface CapTrackerProps {
@@ -72,16 +74,14 @@ useGLTF.preload('/models/cap.glb')
 export const CapPortal = ({
   props
 }: TrackerRendererProps<CapPortalProps, undefined>) => {
-  const { nodes } = useGLTF('/models/cap.glb') as CapGLTF
-
   const { element } = props
   const rect = useClientRect(element)
 
-  const SceneNode = useMemo(() => {
-    const Scene = nodes.Capv2.clone(true)
-    return Scene
-  }, [nodes.Capv2])
+  const [uniforms, updateUniforms] = useUniforms({
+    fReveal: 0
+  })
 
+  // animation config
   const groupRef = useRef<THREE.Group>(null)
   const randomY = useMemo(() => (Math.random() - 0.5) * Math.PI * 0.2 - 0.3, [])
   const randomX = useMemo(() => (Math.random() - 0.5) * Math.PI * 0.1 + 0.2, [])
@@ -92,7 +92,8 @@ export const CapPortal = ({
     return Math.random() * (max - min) + min
   }, [])
 
-  const gRef = useRef<gsap.core.Tween | null>(null)
+  // tween
+  const twRef = useRef<gsap.core.Tween | null>(null)
 
   useEffect(() => {
     if (!groupRef.current) return
@@ -107,9 +108,14 @@ export const CapPortal = ({
         trigger: triggerEl,
         start: randomStart + '% bottom',
         end: randomStart + 20 + '% bottom'
+      },
+      onUpdate: () => {
+        updateUniforms({
+          fReveal: g.progress()
+        })
       }
     })
-    gRef.current = g
+    twRef.current = g
 
     return () => {
       g.kill()
@@ -117,7 +123,26 @@ export const CapPortal = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [randomY, randomX, randomStart, groupRef.current])
 
-  const progress = gRef.current?.totalProgress() || 0
+  const progress = twRef.current?.totalProgress() || 0
+
+  // materials
+  const { nodes } = useGLTF('/models/cap.glb') as CapGLTF
+  const SceneNode = useMemo(() => {
+    const Scene = nodes.Capv2.clone(true)
+
+    Scene.traverse((child) => {
+      if (
+        child instanceof Mesh &&
+        child.material instanceof MeshStandardMaterial
+      ) {
+        const newMaterial = capShaderMaterial(uniforms).copy(child.material)
+        newMaterial.transparent = true
+        child.material = newMaterial
+      }
+    })
+
+    return Scene
+  }, [nodes.Capv2, uniforms])
 
   const centerX = rect.absoluteLeft + rect.width / 2
   const centerY = rect.absoluteTop + rect.height / 2
