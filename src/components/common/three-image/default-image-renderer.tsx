@@ -1,3 +1,5 @@
+'use client'
+
 import { useFrame, useLoader } from '@react-three/fiber'
 import { TextureLoader } from 'three'
 
@@ -9,7 +11,11 @@ import { Uniforms, useUniforms } from '~/hooks/use-uniforms'
 
 import type { ImagePortalProps, ImagePortalUniforms } from '.'
 
-export const ImageRenderer = ({
+export type ImageRendererElement = (
+  props: TrackerRendererProps<ImagePortalProps, Uniforms<ImagePortalUniforms>>
+) => JSX.Element | null
+
+export const DefaultImageRenderer = ({
   props,
   uniforms: imageUniforms
 }: TrackerRendererProps<ImagePortalProps, Uniforms<ImagePortalUniforms>>) => {
@@ -55,8 +61,8 @@ export const ImageRenderer = ({
     >
       <planeGeometry args={[rect.width, rect.height, 126, 126]} />
       <shaderMaterial
-        vertexShader={vertexShader || defaultVertexShader}
-        fragmentShader={fragmentShader || defaultFragmentShader}
+        vertexShader={vertexShader || defaultImageVertexShader}
+        fragmentShader={fragmentShader || defaultImageFragmentShader}
         uniforms={{
           ...imageUniforms,
           ...uniforms,
@@ -67,7 +73,7 @@ export const ImageRenderer = ({
   )
 }
 
-const defaultVertexShader = /* glsl */ `
+export const defaultImageVertexShader = /* glsl */ `
 varying vec3 vNormal;
 varying vec2 vUv;
 varying vec3 wPos;
@@ -81,11 +87,8 @@ void main() {
 }
 `
 
-const defaultFragmentShader = /* glsl */ `
-  
-  varying vec3 vNormal;
+export const defaultImageFragmentShader = /* glsl */ `
   varying vec2 vUv;
-  varying vec3 wPos;
   uniform sampler2D imageTexture;
 
   void main() {

@@ -87,7 +87,8 @@ DistortedLens getLensDistortion(
     debug
   );
 }
-`
+` as string
+
 /** vec2 zoomUV(vec2 uv, vec2 center, float zoom) */
 export const zoomUv = /* glsl */ `
 vec2 zoomUV(vec2 uv, vec2 center, float zoom) {
@@ -96,8 +97,29 @@ vec2 zoomUV(vec2 uv, vec2 center, float zoom) {
   centeredUV *= zoomFactor;
   return centeredUV + center;
 }
-`
+` as string
 
+/**
+varying vec3 vNormal;
+
+varying vec2 vUv;
+
+varying vec3 wPos;
+
+uniform vec2 vMousePos;
+
+uniform float fHover;
+
+uniform float fYScroll;
+
+uniform vec2 vElementPos;
+
+uniform vec2 vElementSize;
+
+uniform sampler2D imageTexture;
+
+uniform float fTime;
+ */
 export const imageGlobals = /* glsl */ `
 varying vec3 vNormal;
 varying vec2 vUv;
@@ -110,7 +132,7 @@ uniform vec2 vElementPos;
 uniform vec2 vElementSize;
 uniform sampler2D imageTexture;
 uniform float fTime;
-`
+` as string
 
 export const lensDistortionFragmentShader = /* glsl */ `
 // based on https://www.shadertoy.com/view/DlV3DV

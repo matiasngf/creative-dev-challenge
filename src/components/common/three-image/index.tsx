@@ -7,12 +7,16 @@ import { useSmooth } from '~/hooks/use-smooth'
 import { useUniforms } from '~/hooks/use-uniforms'
 
 import { ThreePortal } from '../three-portal'
-import { ImageRenderer } from './renderer'
+import {
+  DefaultImageRenderer,
+  ImageRendererElement
+} from './default-image-renderer'
 
 export interface ThreeImageProps extends ImageProps {
   vertexShader?: string
   fragmentShader?: string
   imageMaps?: ImageMaps
+  renderer?: ImageRendererElement
 }
 
 export interface ImageMaps {
@@ -36,6 +40,7 @@ export const ThreeImage = ({
   style = {},
   src,
   imageMaps = {},
+  renderer = DefaultImageRenderer,
   ...props
 }: ThreeImageProps) => {
   const ref = useRef<HTMLImageElement>(null)
@@ -88,7 +93,7 @@ export const ThreeImage = ({
         props={portalProps}
         uniforms={uniforms}
         autoAdd
-        renderer={ImageRenderer}
+        renderer={renderer}
       />
     </>
   )
