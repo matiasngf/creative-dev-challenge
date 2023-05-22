@@ -13,21 +13,31 @@ export const ImageRenderer = ({
   props,
   uniforms: imageUniforms
 }: TrackerRendererProps<ImagePortalProps, Uniforms<ImagePortalUniforms>>) => {
-  const { el, vertexShader, fragmentShader, imgSrc } = props
+  const { el, vertexShader, fragmentShader, imageMaps } = props
   const rect = useClientRect(el)
   const mouseRef = useMouseStore((s) => s.ref)
 
-  const [imageTexture] = useLoader(TextureLoader, [imgSrc])
+  const imagesMapsSrc = Object.values(imageMaps)
+  const imagesMapKeys = Object.keys(imageMaps)
+  const loadedImages = useLoader(TextureLoader, imagesMapsSrc)
+  const imagesMaps = Object.fromEntries(
+    imagesMapKeys.map((key, index) => [key, loadedImages[index]])
+  )
+
+  const [imagesUniforms] = useUniforms(imagesMaps)
+
   const yScrollRef = useScrollStore((s) => s.yScrollRef)
   const [uniforms, setUniforms] = useUniforms({
+    fTime: 0,
     vMousePos: [0, 0],
     fYScroll: 0,
     vElementPos: [0, 0],
     vElementSize: [1, 1]
   })
 
-  useFrame(() => {
+  useFrame(({ clock }) => {
     setUniforms({
+      fTime: clock.getElapsedTime(),
       vMousePos: [mouseRef.x, -mouseRef.y],
       fYScroll: -yScrollRef.current,
       vElementPos: [rect.absoluteLeft, -rect.absoluteTop - rect.height],
@@ -50,7 +60,7 @@ export const ImageRenderer = ({
         uniforms={{
           ...imageUniforms,
           ...uniforms,
-          imageTexture: { value: imageTexture }
+          ...imagesUniforms
         }}
       />
     </mesh>

@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { useEffect, useId, useMemo } from 'react'
+import { lerp } from 'three/src/math/MathUtils'
 import { create } from 'zustand'
 
 class MousePositionRef {
@@ -18,12 +19,16 @@ export interface MouseStore {
   /** Reference to the mouse position */
   ref: MousePositionRef
 
+  size: number
+
   /** Set the mouse position */
   setPosition: (x: number, y: number) => void
   /** Register hovered element */
   registerHoveredElement: (id: string) => void
   /** Remove hovered element */
   removeHoveredElement: (id: string) => void
+  /** Function to update on frame */
+  raf: () => void
 }
 
 export const useMouseStore = create<MouseStore>((set) => ({
@@ -31,6 +36,7 @@ export const useMouseStore = create<MouseStore>((set) => ({
   y: 0,
   hover: false,
   hoveredElements: [],
+  size: 40,
   ref: new MousePositionRef(),
   setPosition: (x, y) => {
     set((state) => {
@@ -64,21 +70,85 @@ export const useMouseStore = create<MouseStore>((set) => ({
         hover: newHovered.length > 0
       }
     })
+  },
+  raf: () => {
+    set((state) => {
+      const maxSize = 400
+      const minSize = 40
+      const targetSize = state.hover ? maxSize : minSize
+      const currentSize = state.size
+
+      if (currentSize === targetSize) return {}
+      const size = lerp(currentSize, targetSize, 0.1)
+      const sizeDiff = Math.abs(size - targetSize)
+      const sizeIsClose = sizeDiff < 0.1
+
+      return {
+        size: sizeIsClose ? targetSize : size
+      }
+    })
   }
 }))
 
 export const useTrackMouse = () => {
   const setPosition = useMouseStore((state) => state.setPosition)
+  const raf = useMouseStore((state) => state.raf)
 
   useEffect(() => {
+    const abortController = new AbortController()
+    const signal = abortController.signal
+
     const onMouseMove = (e: MouseEvent) => {
       setPosition(e.clientX, e.clientY)
     }
 
+    const nextRaf = () => {
+      if (signal.aborted) return
+      raf()
+      requestAnimationFrame(nextRaf)
+    }
+    nextRaf()
+
     window.addEventListener('mousemove', onMouseMove)
 
     return () => {
+      abortController.abort()
       window.removeEventListener('mousemove', onMouseMove)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setPosition])
+}
+
+export const useRegisterHover = () => {
+  const id = useId()
+  const mStore = useMouseStore(
+    ({ registerHoveredElement, removeHoveredElement }) => ({
+      registerHoveredElement,
+      removeHoveredElement
+    })
+  )
+
+  const registerHoveredElement = useMemo(
+    () => () => mStore.registerHoveredElement(id),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [id]
+  )
+  const removeHoveredElement = useMemo(
+    () => () => mStore.removeHoveredElement(id),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [id]
+  )
+
+  // unmount
+  useEffect(() => {
+    return () => {
+      removeHoveredElement()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id])
+
+  return {
+    registerHoveredElement,
+    removeHoveredElement
+  }
 }

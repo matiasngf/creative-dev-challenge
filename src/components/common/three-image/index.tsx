@@ -12,13 +12,18 @@ import { ImageRenderer } from './renderer'
 export interface ThreeImageProps extends ImageProps {
   vertexShader?: string
   fragmentShader?: string
+  imageMaps?: ImageMaps
+}
+
+export interface ImageMaps {
+  [key: string]: string
 }
 
 export interface ImagePortalProps {
   vertexShader: string | undefined
   fragmentShader: string | undefined
-  imgSrc: string
   el: HTMLImageElement | null
+  imageMaps: ImageMaps
 }
 
 export type ImagePortalUniforms = {
@@ -30,6 +35,7 @@ export const ThreeImage = ({
   fragmentShader,
   style = {},
   src,
+  imageMaps = {},
   ...props
 }: ThreeImageProps) => {
   const ref = useRef<HTMLImageElement>(null)
@@ -39,17 +45,19 @@ export const ThreeImage = ({
   const [portalProps, setPortalProps] = useState<ImagePortalProps>({
     vertexShader,
     fragmentShader,
-    imgSrc,
-    el: ref.current
+    el: ref.current,
+    imageMaps: {
+      imageTexture: imgSrc,
+      ...imageMaps
+    }
   })
 
   useEffect(() => {
     setPortalProps((s) => ({
       ...s,
-      el: ref.current,
-      imgSrc
+      el: ref.current
     }))
-  }, [imgSrc, ref])
+  }, [ref])
 
   const [hovered, hover] = useState(false)
   const smoothHovered = useSmooth(+hovered, 0.05)

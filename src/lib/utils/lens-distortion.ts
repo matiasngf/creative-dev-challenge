@@ -98,9 +98,7 @@ vec2 zoomUV(vec2 uv, vec2 center, float zoom) {
 }
 `
 
-export const imageDistortionFragment = /* glsl */ `
-// based on https://www.shadertoy.com/view/DlV3DV
-
+export const imageGlobals = /* glsl */ `
 varying vec3 vNormal;
 varying vec2 vUv;
 varying vec3 wPos;
@@ -111,6 +109,13 @@ uniform float fYScroll;
 uniform vec2 vElementPos;
 uniform vec2 vElementSize;
 uniform sampler2D imageTexture;
+uniform float fTime;
+`
+
+export const lensDistortionFragmentShader = /* glsl */ `
+// based on https://www.shadertoy.com/view/DlV3DV
+
+${imageGlobals}
 
 ${zoomUv}
 ${getLensDistortion}
@@ -120,11 +125,11 @@ void main() {
   vec2 p = wPos.xy;
   vec3 result = vec3(1.0);
 
-  vec2 sphereCenter = vMousePos + vec2(0.0, fYScroll);
+  vec2 realMousePos = vMousePos + vec2(0.0, fYScroll);
   vec2 spehereCenterUv = calculateUV(
     vMousePos, vElementPos - vec2(0.0, fYScroll), vElementSize);
 
-  float sphereRadius = 170.0;
+  float sphereRadius = 290.0;
   float focusFactor = 0.3;
   float chromaticAberrationFactor = 0.1;
 
@@ -136,7 +141,7 @@ void main() {
   DistortedLens distortion = getLensDistortion(
     p,
     zoomedUv,
-    sphereCenter,
+    realMousePos,
     sphereRadius,
     focusFactor,
     chromaticAberrationFactor
