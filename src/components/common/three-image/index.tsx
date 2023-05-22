@@ -3,7 +3,6 @@
 import Image, { ImageProps } from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
-import { ClientRect, useClientRect } from '~/hooks/use-client-rect'
 import { useSmooth } from '~/hooks/use-smooth'
 import { useUniforms } from '~/hooks/use-uniforms'
 
@@ -18,8 +17,8 @@ export interface ThreeImageProps extends ImageProps {
 export interface ImagePortalProps {
   vertexShader: string | undefined
   fragmentShader: string | undefined
-  rect: ClientRect
   imgSrc: string
+  el: HTMLImageElement | null
 }
 
 export type ImagePortalUniforms = {
@@ -37,23 +36,20 @@ export const ThreeImage = ({
 
   const imgSrc = src as string
 
-  const rect = useClientRect(ref.current)
-
-  const [portalProps, setPortalProps] = useState({
+  const [portalProps, setPortalProps] = useState<ImagePortalProps>({
     vertexShader,
     fragmentShader,
-    rect,
-    imgSrc
+    imgSrc,
+    el: ref.current
   })
 
   useEffect(() => {
     setPortalProps((s) => ({
       ...s,
-      rect,
+      el: ref.current,
       imgSrc
     }))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(rect), imgSrc])
+  }, [imgSrc, ref])
 
   const [hovered, hover] = useState(false)
   const smoothHovered = useSmooth(+hovered, 0.05)
