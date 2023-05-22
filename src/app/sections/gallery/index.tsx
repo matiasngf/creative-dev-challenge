@@ -25,15 +25,13 @@ export const Gallery = () => {
       url: '/images/basement-team-2.jpg',
       style: {
         gridArea: '2 / 1 / 3 / 9'
-      },
-      fragmentShader: imageDistortionFragment
+      }
     },
     {
       url: '/images/basement-team-3.jpg',
       style: {
         gridArea: '2 / 9 / 3 / 13'
-      },
-      fragmentShader: imageDistortionFragment
+      }
     }
   ]
   return (
