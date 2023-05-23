@@ -1,3 +1,14 @@
+/**
+float noise4d1(vec4 v)
+
+vec4 permute(vec4 x)
+
+float permute(float x)
+
+vec4 taylorInvSqrt(vec4 r)
+
+float taylorInvSqrt(float r)
+*/
 export const noise4d1 = /* glsl */ `
 // https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
 
@@ -94,4 +105,4 @@ float noise4d1(vec4 v){
                + dot(m1*m1, vec2( dot( p3, x3 ), dot( p4, x4 ) ) ) ) ;
 
 }
-`
+` as string
