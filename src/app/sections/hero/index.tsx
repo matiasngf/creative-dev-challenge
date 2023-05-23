@@ -5,7 +5,7 @@ import Marquee from 'react-fast-marquee'
 
 import { Container } from '~/components/layout/container'
 
-import { AwwwardTracker } from './awward'
+import { AwwwardTracker } from './awwward'
 import s from './hero.module.scss'
 
 export const Hero = () => {

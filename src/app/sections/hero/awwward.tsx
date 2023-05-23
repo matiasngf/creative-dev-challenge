@@ -11,7 +11,7 @@ import type { TrackerRendererProps } from '~/context/use-tracked-element'
 import { ClientRect, useClientRect } from '~/hooks/use-client-rect'
 import { useUniforms } from '~/hooks/use-uniforms'
 
-import { compileAwwwardShader } from './awward-material'
+import { compileAwwwardShader } from './awwward-material'
 
 interface AwwardProps {
   rect: ClientRect
