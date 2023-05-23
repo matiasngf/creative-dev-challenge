@@ -1,14 +1,17 @@
 'use client'
 
 import { Center, Float, Resize, useGLTF } from '@react-three/drei'
-import { gsap } from 'gsap'
-import { useEffect, useRef, useState } from 'react'
-import type { Group, Mesh, MeshStandardMaterial } from 'three'
+import { gsap, Power2 } from 'gsap'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Group, Mesh, MeshStandardMaterial } from 'three'
 import type { GLTF } from 'three-stdlib'
 
 import { ThreePortal } from '~/components/common/three-portal'
 import type { TrackerRendererProps } from '~/context/use-tracked-element'
 import { ClientRect, useClientRect } from '~/hooks/use-client-rect'
+import { useUniforms } from '~/hooks/use-uniforms'
+
+import { compileAwwwardShader } from './awward-material'
 
 interface AwwardProps {
   rect: ClientRect
@@ -57,12 +60,45 @@ export const AwwwardPortal = ({
   const { rect } = props
 
   const { nodes } = useGLTF('/models/awwwards.glb') as AwwardGLTF
+
+  const [uniforms, setUniforms] = useUniforms({
+    fReveal: 0,
+    vPos: [0.0, 0.5]
+  })
+
+  const SceneNode = useMemo(() => {
+    const Result = new Group()
+
+    const Scene = nodes.Awwwards.clone(true)
+
+    Scene.traverse((child) => {
+      if (
+        child instanceof Mesh &&
+        child.material instanceof MeshStandardMaterial
+      ) {
+        const randomId = Math.random().toString(36).substring(7)
+        const newObject = child.clone(true)
+        newObject.material = newObject.material.clone()
+
+        newObject.material.onBeforeCompile = compileAwwwardShader(uniforms)
+        newObject.material.transparent = true
+        newObject.material.needsUpdate = true
+        newObject.material.customProgramCacheKey = function () {
+          return randomId
+        }
+        Result.add(newObject)
+      }
+    })
+
+    return Result
+  }, [nodes.Awwwards, uniforms])
+
   const groupRef = useRef<Group>(null)
 
   useEffect(() => {
     if (!groupRef.current) return
 
-    gsap.to(groupRef.current.rotation, {
+    const t1 = gsap.to(groupRef.current.rotation, {
       y: Math.PI * -2,
       scrollTrigger: {
         scrub: true,
@@ -71,7 +107,27 @@ export const AwwwardPortal = ({
         end: '1000px top'
       }
     })
+    const t2 = gsap.to(uniforms.fReveal, {
+      value: 1,
+      delay: 1.5,
+      duration: 1.5,
+      ease: Power2.easeOut
+    })
+    return () => {
+      t1.kill()
+      t2.kill()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const topPos = -rect.absoluteTop
+  const bottomPos = -rect.absoluteTop - rect.height
+
+  useEffect(() => {
+    setUniforms({
+      vPos: [topPos, bottomPos]
+    })
+  }, [topPos, bottomPos, setUniforms])
 
   const centerX = rect.absoluteLeft + rect.width / 2
   const centerY = rect.absoluteTop + rect.height / 2
@@ -88,7 +144,7 @@ export const AwwwardPortal = ({
         <Float rotationIntensity={0.5} floatIntensity={0.2}>
           <Center>
             <Resize>
-              <primitive object={nodes.Awwwards} />
+              <primitive object={SceneNode} />
             </Resize>
           </Center>
         </Float>
