@@ -3,6 +3,8 @@
 import Image, { ImageProps } from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
+import { useMouseStore } from '~/context/use-mouse'
+import { useScreenSizeStore } from '~/context/use-screen-size'
 import { useSmooth } from '~/hooks/use-smooth'
 import { useUniforms } from '~/hooks/use-uniforms'
 
@@ -32,6 +34,7 @@ export interface ImagePortalProps {
 
 export type ImagePortalUniforms = {
   fHover: number
+  fHoverSize: number
 }
 
 export const ThreeImage = ({
@@ -64,17 +67,24 @@ export const ThreeImage = ({
     }))
   }, [ref])
 
+  const hoverSize = useMouseStore((s) => s.size)
+  const canvasWidth = useScreenSizeStore((s) => s.width)
+
+  const scaledHoverSize = (canvasWidth / 1920) * hoverSize
+
   const [hovered, hover] = useState(false)
   const smoothHovered = useSmooth(+hovered, 0.05)
   const [uniforms, updateUniforms] = useUniforms<ImagePortalUniforms>({
-    fHover: smoothHovered
+    fHover: smoothHovered,
+    fHoverSize: scaledHoverSize
   })
+
   useEffect(() => {
-    if (!ref.current) return
     updateUniforms({
-      fHover: smoothHovered
+      fHover: smoothHovered,
+      fHoverSize: scaledHoverSize
     })
-  }, [smoothHovered, updateUniforms])
+  }, [scaledHoverSize, smoothHovered, updateUniforms])
 
   return (
     <>

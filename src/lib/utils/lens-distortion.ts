@@ -138,6 +138,7 @@ export const lensDistortionFragmentShader = /* glsl */ `
 // based on https://www.shadertoy.com/view/DlV3DV
 
 ${imageGlobals}
+uniform float fHoverSize;
 
 ${zoomUv}
 ${getLensDistortion}
@@ -151,7 +152,7 @@ void main() {
   vec2 spehereCenterUv = calculateUV(
     vMousePos, vElementPos - vec2(0.0, fYScroll), vElementSize);
 
-  float sphereRadius = 290.0;
+  float sphereRadius = fHoverSize;
   float focusFactor = 0.3;
   float chromaticAberrationFactor = 0.1;
 

@@ -1,7 +1,10 @@
+'use client'
+
 import React, { CSSProperties } from 'react'
 
 import { ImageMaps, ThreeImage } from '~/components/common/three-image'
 import { Container } from '~/components/layout/container'
+import { useRegisterHover } from '~/context/use-mouse'
 import { lensDistortionFragmentShader } from '~/lib/utils/lens-distortion'
 import { swapMapFragmentShader } from '~/lib/utils/swap-maps-fragment'
 
@@ -44,8 +47,15 @@ export const Gallery = () => {
       }
     }
   ]
+
+  const { registerHoveredElement, removeHoveredElement } = useRegisterHover()
   return (
-    <Container as="section" className={s.container}>
+    <Container
+      as="section"
+      className={s.container}
+      onMouseEnter={registerHoveredElement}
+      onMouseLeave={removeHoveredElement}
+    >
       {images.map((image, index) => (
         <div key={index} className={s.imageContainer} style={image.style}>
           <ThreeImage

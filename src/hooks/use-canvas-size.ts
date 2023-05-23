@@ -9,7 +9,6 @@ export const useCanvasSize = () => {
   const [pixelRatio, setPixelRatio] = useState(1)
   const domWidth = gl.domElement.width
   const domHeight = gl.domElement.height
-
   useFrame(() => {
     const newPixelRatio = gl.getPixelRatio()
     if (newPixelRatio !== pixelRatio) {

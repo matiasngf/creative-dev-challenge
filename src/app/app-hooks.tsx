@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react'
 
 import { useFontsStore } from '~/context/use-fonts-loaded'
-import { useTrackMouse } from '~/context/use-mouse'
+import { useTrackMouseAndScreen } from '~/context/use-mouse'
 import { useLenis } from '~/hooks/use-lenis'
 import {
   basementLog,
@@ -32,7 +32,7 @@ export const AppHooks = () => {
     smoothWheel: true,
     normalizeWheel: true
   })
-  useTrackMouse()
+  useTrackMouseAndScreen()
 
   return gaTrackingId ? <GAScripts /> : null
 }

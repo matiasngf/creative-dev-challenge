@@ -4,6 +4,7 @@ import { noiseMask } from './noise-mask'
 export const swapMapFragmentShader = /* glsl */ `
 ${imageGlobals}
 uniform sampler2D hoverTexture;
+uniform float fHoverSize;
 
 ${noiseMask}
 
@@ -18,7 +19,7 @@ void main() {
   vec3 shereCenter = vec3(realMousePos, 0.0);
   
   vec4 noiseP = vec4(p, fTime);
-  float noiseRadius = 290.0;
+  float noiseRadius = fHoverSize;
   float noiseScale = 2.0;
   float noiseVelociy = 0.2;
   float noiseAmplitude = 30.0;

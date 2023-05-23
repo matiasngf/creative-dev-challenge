@@ -1,10 +1,15 @@
+'use client'
+
 import { useEffect, useId, useMemo } from 'react'
 import { lerp } from 'three/src/math/MathUtils'
 import { create } from 'zustand'
 
+import { useScreenSizeStore } from './use-screen-size'
+
 class MousePositionRef {
   x = 0
   y = 0
+  size = 0
 }
 
 export interface MouseStore {
@@ -73,26 +78,30 @@ export const useMouseStore = create<MouseStore>((set) => ({
   },
   raf: () => {
     set((state) => {
-      const maxSize = 400
+      const maxSize = 250
       const minSize = 40
       const targetSize = state.hover ? maxSize : minSize
       const currentSize = state.size
 
       if (currentSize === targetSize) return {}
-      const size = lerp(currentSize, targetSize, 0.1)
+      const size = Math.round(lerp(currentSize, targetSize, 0.1) * 10) / 10
       const sizeDiff = Math.abs(size - targetSize)
       const sizeIsClose = sizeDiff < 0.1
 
+      const newSize = sizeIsClose ? targetSize : size
+      state.ref.size = newSize
       return {
-        size: sizeIsClose ? targetSize : size
+        size: newSize
       }
     })
   }
 }))
 
-export const useTrackMouse = () => {
+export const useTrackMouseAndScreen = () => {
   const setPosition = useMouseStore((state) => state.setPosition)
   const raf = useMouseStore((state) => state.raf)
+
+  const screenRaf = useScreenSizeStore((s) => s.raf)
 
   useEffect(() => {
     const abortController = new AbortController()
@@ -105,6 +114,7 @@ export const useTrackMouse = () => {
     const nextRaf = () => {
       if (signal.aborted) return
       raf()
+      screenRaf()
       requestAnimationFrame(nextRaf)
     }
     nextRaf()
