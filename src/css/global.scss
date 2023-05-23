@@ -31,6 +31,13 @@ body {
   font-family: var(--font-body);
   transition: opacity #{$duration / 3 + 's'} ease-in;
   overflow-x: hidden;
+  cursor: url('/assets/cursor.png'), auto;
+
+  a,
+  button,
+  .cursor-pointer {
+    cursor: url('/assets/cursor-hover.png'), pointer;
+  }
 }
 
 body.inspect * {
