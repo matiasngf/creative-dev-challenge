@@ -1,9 +1,9 @@
 import type { Uniforms } from '~/hooks/use-uniforms'
-import { StandardShaderMaterial } from '~/lib/standard-shader-material'
+import { buildCompile } from '~/lib/standard-shader-material'
 import { noise4d1 } from '~/lib/utils/shaders'
 
-export const capShaderMaterial = (uniforms: Uniforms) =>
-  new StandardShaderMaterial({
+export const compileCapShader = (uniforms: Uniforms) => {
+  return buildCompile({
     uniforms,
     vertexShaderBefore: /*glsl*/ `
       varying vec3 wPos;
@@ -58,3 +58,4 @@ export const capShaderMaterial = (uniforms: Uniforms) =>
       gl_FragColor.a = border;
     `
   })
+}

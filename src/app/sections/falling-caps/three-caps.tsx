@@ -13,7 +13,7 @@ import { useClientRect } from '~/hooks/use-client-rect'
 import { useUniforms } from '~/hooks/use-uniforms'
 
 import type { Cap } from '.'
-import { capShaderMaterial } from './cap-material'
+import { compileCapShader } from './cap-material'
 import s from './caps.module.scss'
 
 export interface CapTrackerProps {
@@ -113,9 +113,7 @@ export const CapPortal = ({
 
   useEffect(() => {
     if (!groupRef.current) return
-
     const triggerEl = document.getElementById('#capsContainer')
-
     const g = gsap.to(groupRef.current.rotation, {
       x: randomX,
       y: randomY,
@@ -124,11 +122,6 @@ export const CapPortal = ({
         trigger: triggerEl,
         start: randomStart + '% bottom',
         end: randomStart + 100 / 4 + '% bottom'
-      },
-      onUpdate: () => {
-        updateUniforms({
-          fReveal: g.progress()
-        })
       }
     })
     twRef.current = g
@@ -141,9 +134,17 @@ export const CapPortal = ({
 
   const progress = twRef.current?.totalProgress() || 0
 
+  useEffect(() => {
+    updateUniforms({
+      fReveal: progress
+    })
+  }, [progress, updateUniforms])
+
   // materials
   const { nodes } = useGLTF('/models/cap.glb') as CapGLTF
   const SceneNode = useMemo(() => {
+    const Result = new Group()
+
     const Scene = nodes.Capv2.clone(true)
 
     Scene.traverse((child) => {
@@ -151,13 +152,21 @@ export const CapPortal = ({
         child instanceof Mesh &&
         child.material instanceof MeshStandardMaterial
       ) {
-        const newMaterial = capShaderMaterial(uniforms).copy(child.material)
-        newMaterial.transparent = true
-        child.material = newMaterial
+        const randomId = Math.random().toString(36).substring(7)
+        const newObject = child.clone(true)
+        newObject.material = newObject.material.clone()
+
+        newObject.material.onBeforeCompile = compileCapShader(uniforms)
+        newObject.material.transparent = true
+        newObject.material.needsUpdate = true
+        newObject.material.customProgramCacheKey = function () {
+          return randomId
+        }
+        Result.add(newObject)
       }
     })
 
-    return Scene
+    return Result
   }, [nodes.Capv2, uniforms])
 
   const centerX = rect.absoluteLeft + rect.width / 2
