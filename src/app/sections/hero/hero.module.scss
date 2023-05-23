@@ -51,13 +51,17 @@ $fullscreen-font: calc(10.1vw - 6px);
   }
 }
 
+.marqueeContainer {
+  position: relative;
+}
+
 .marquee {
   margin: tovw(90px, 40px, 'desktop') 0 tovw(90px, 40px, 'desktop') 0;
   border-top: tovw(1px, 1px, 'desktop') solid var(--color-white);
   border-bottom: tovw(1px, 1px, 'desktop') solid var(--color-white);
   padding: tovw(12px, 12px, 'desktop') 0;
   animation: appear 1.25s ease-in-out;
-  width: calc(100% + tovw(120px, 120px, 'desktop')) !important;
+  width: 100%;
 
   p {
     margin-right: tovw(16px, 16px, 'desktop');

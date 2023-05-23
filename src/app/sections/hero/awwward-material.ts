@@ -33,7 +33,7 @@ export const compileAwwwardShader = (uniforms: Uniforms) => {
     `,
     fragmentShader: /*glsl*/ `
     float topPos = vPos.x + 40.;
-    float bottomPos = vPos.y;
+    float bottomPos = vPos.y - 40.;
     
     vec3 result = gl_FragColor.rgb;
     vec3 p = wPos;
