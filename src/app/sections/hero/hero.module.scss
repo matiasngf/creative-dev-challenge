@@ -67,14 +67,14 @@ $fullscreen-font: calc(10.1vw - 6px);
 
 .awwward {
   position: absolute;
-  right: tovw(30px, 16px, 'desktop');
+  right: tovw(40px, 16px, 'desktop');
   bottom: 0;
   transform: translateY(15%);
   z-index: 10;
 
   div {
-    width: tovw(250px, 145px, 'desktop');
-    height: tovw(360px, 210px, 'desktop');
+    width: tovw(200px, 140px, 'desktop');
+    aspect-ratio: 2 / 3;
   }
 }
 

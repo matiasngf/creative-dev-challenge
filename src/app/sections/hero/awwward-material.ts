@@ -19,6 +19,7 @@ export const compileAwwwardShader = (uniforms: Uniforms) => {
     `,
     fragmentShaderBefore: /*glsl*/ `
       uniform float fReveal;
+      uniform float fHover;
       uniform float fTime;
       uniform float fSize;
       uniform vec3 vCenter;
@@ -31,14 +32,13 @@ export const compileAwwwardShader = (uniforms: Uniforms) => {
       ${calcSdfInside}
     `,
     fragmentShader: /*glsl*/ `
-    float topPos = vPos.x + 10.;
+    float topPos = vPos.x + 40.;
     float bottomPos = vPos.y;
     
     vec3 result = gl_FragColor.rgb;
     vec3 p = wPos;
 
     float revealMaskY = valueRemap(fReveal, 0., 1., bottomPos, topPos);
-
 
     float noise = noise4d1(vec4(
       p.xyz / 40.0,
@@ -50,8 +50,10 @@ export const compileAwwwardShader = (uniforms: Uniforms) => {
 
     float inside = calcSdfInside(sdf);
     float insideBorder = calcSdfInside(border);
+    vec3 orangeColor = vec3(1.,0.302,0.);
 
-    result = mix(vec3(1.,0.302,0.), result, inside);
+    result = mix(orangeColor, result, inside);
+    result = mix(result, orangeColor, fHover);
     
     gl_FragColor.rgb = result;
     gl_FragColor.a = insideBorder;

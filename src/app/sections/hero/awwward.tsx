@@ -9,12 +9,18 @@ import type { GLTF } from 'three-stdlib'
 import { ThreePortal } from '~/components/common/three-portal'
 import type { TrackerRendererProps } from '~/context/use-tracked-element'
 import { ClientRect, useClientRect } from '~/hooks/use-client-rect'
-import { useUniforms } from '~/hooks/use-uniforms'
+import { useSmooth } from '~/hooks/use-smooth'
+import { Uniforms, useUniforms } from '~/hooks/use-uniforms'
 
 import { compileAwwwardShader } from './awwward-material'
 
 interface AwwardProps {
   rect: ClientRect
+  smoothHover: number
+}
+
+interface AwwwardUniforms {
+  fHover: number
 }
 
 export const AwwwardTracker = () => {
@@ -22,7 +28,8 @@ export const AwwwardTracker = () => {
   const rect = useClientRect(ref.current)
 
   const [awwardProps, setAwwardProps] = useState<AwwardProps>({
-    rect
+    rect,
+    smoothHover: 0
   })
 
   useEffect(() => {
@@ -32,9 +39,35 @@ export const AwwwardTracker = () => {
     }))
   }, [rect])
 
+  const [hover, setIsHover] = useState(false)
+  const smoothHover = useSmooth(+hover, 0.1)
+
+  const [uniforms, setUniforms] = useUniforms<AwwwardUniforms>({
+    fHover: 0
+  })
+
+  useEffect(() => {
+    setAwwardProps((s) => ({
+      ...s,
+      smoothHover
+    }))
+    setUniforms({
+      fHover: smoothHover
+    })
+  }, [smoothHover, setUniforms])
+
   return (
-    <div ref={ref}>
-      <ThreePortal props={awwardProps} autoAdd renderer={AwwwardPortal} />
+    <div
+      ref={ref}
+      onPointerEnter={() => setIsHover(true)}
+      onPointerLeave={() => setIsHover(false)}
+    >
+      <ThreePortal
+        props={awwardProps}
+        uniforms={uniforms}
+        autoAdd
+        renderer={AwwwardPortal}
+      />
     </div>
   )
 }
@@ -55,16 +88,28 @@ interface AwwardGLTF extends GLTF {
 useGLTF.preload('/models/awwwards.glb')
 
 export const AwwwardPortal = ({
-  props
-}: TrackerRendererProps<AwwardProps, undefined>) => {
-  const { rect } = props
+  props,
+  uniforms: portalUniforms
+}: TrackerRendererProps<AwwardProps, Uniforms<AwwwardUniforms>>) => {
+  const { rect, smoothHover } = props
 
-  const { nodes } = useGLTF('/models/awwwards.glb') as AwwardGLTF
+  // Create uniforms
+  const topPos = -rect.absoluteTop
+  const bottomPos = -rect.absoluteTop - rect.height
 
   const [uniforms, setUniforms] = useUniforms({
     fReveal: 0,
     vPos: [0.0, 0.5]
   })
+
+  useEffect(() => {
+    setUniforms({
+      vPos: [topPos, bottomPos]
+    })
+  }, [topPos, bottomPos, setUniforms])
+
+  // load 3D model
+  const { nodes } = useGLTF('/models/awwwards.glb') as AwwardGLTF
 
   const SceneNode = useMemo(() => {
     const Result = new Group()
@@ -80,13 +125,25 @@ export const AwwwardPortal = ({
         const newObject = child.clone(true)
         const newMaterial = newObject.material.clone() as MeshStandardMaterial
 
+        // Main object
         if (child.name === 'Cube001') {
           // fix map offset
           newMaterial.emissiveMap?.repeat.set(0.98, 0.986)
           newMaterial.emissiveMap?.offset.set(0.015, 0.01)
+          newMaterial.onBeforeCompile = compileAwwwardShader({
+            ...uniforms,
+            ...portalUniforms,
+            fHover: { value: 0 }
+          })
+        }
+        // Outline
+        if (child.name === 'Cube001_1') {
+          newMaterial.onBeforeCompile = compileAwwwardShader({
+            ...uniforms,
+            ...portalUniforms
+          })
         }
 
-        newMaterial.onBeforeCompile = compileAwwwardShader(uniforms)
         newMaterial.transparent = true
         newMaterial.needsUpdate = true
         newMaterial.customProgramCacheKey = function () {
@@ -98,7 +155,7 @@ export const AwwwardPortal = ({
     })
 
     return Result
-  }, [nodes.Awwwards, uniforms])
+  }, [nodes.Awwwards, uniforms, portalUniforms])
 
   const groupRef = useRef<Group>(null)
 
@@ -127,30 +184,21 @@ export const AwwwardPortal = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const topPos = -rect.absoluteTop
-  const bottomPos = -rect.absoluteTop - rect.height
-
-  useEffect(() => {
-    setUniforms({
-      vPos: [topPos, bottomPos]
-    })
-  }, [topPos, bottomPos, setUniforms])
-
   const centerX = rect.absoluteLeft + rect.width / 2
   const centerY = rect.absoluteTop + rect.height / 2
-  const scaleFactor = Math.max(rect.width, rect.height) * 0.7
+  const scaleFactor = rect.width + 20 * smoothHover
 
   return (
     <>
       <group
         scale={[scaleFactor, scaleFactor, scaleFactor]}
-        position={[centerX, -centerY + 25, 200]}
+        position={[centerX, -centerY, 200]}
         rotation={[-0.1, 0, 0]}
         ref={groupRef}
       >
         <Float rotationIntensity={0.5} floatIntensity={0.2}>
           <Center>
-            <Resize>
+            <Resize width>
               <primitive object={SceneNode} />
             </Resize>
           </Center>

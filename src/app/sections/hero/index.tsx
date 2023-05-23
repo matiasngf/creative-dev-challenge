@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import React from 'react'
 import Marquee from 'react-fast-marquee'
 
@@ -22,7 +23,9 @@ export const Hero = () => {
         </p>
       </Marquee>
       <div className={s.awwward}>
-        <AwwwardTracker />
+        <Link href="https://www.awwwards.com/basementstudio/" target="_blank">
+          <AwwwardTracker />
+        </Link>
       </div>
     </Container>
   )
