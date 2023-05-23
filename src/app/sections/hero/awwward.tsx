@@ -78,14 +78,21 @@ export const AwwwardPortal = ({
       ) {
         const randomId = Math.random().toString(36).substring(7)
         const newObject = child.clone(true)
-        newObject.material = newObject.material.clone()
+        const newMaterial = newObject.material.clone() as MeshStandardMaterial
 
-        newObject.material.onBeforeCompile = compileAwwwardShader(uniforms)
-        newObject.material.transparent = true
-        newObject.material.needsUpdate = true
-        newObject.material.customProgramCacheKey = function () {
+        if (child.name === 'Cube001') {
+          // fix map offset
+          newMaterial.emissiveMap?.repeat.set(0.98, 0.986)
+          newMaterial.emissiveMap?.offset.set(0.015, 0.01)
+        }
+
+        newMaterial.onBeforeCompile = compileAwwwardShader(uniforms)
+        newMaterial.transparent = true
+        newMaterial.needsUpdate = true
+        newMaterial.customProgramCacheKey = function () {
           return randomId
         }
+        newObject.material = newMaterial
         Result.add(newObject)
       }
     })
@@ -109,7 +116,7 @@ export const AwwwardPortal = ({
     })
     const t2 = gsap.to(uniforms.fReveal, {
       value: 1,
-      delay: 1.5,
+      delay: 1,
       duration: 1.5,
       ease: Power2.easeOut
     })

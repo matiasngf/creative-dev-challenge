@@ -2,8 +2,8 @@
 [x] Caps different order
 [x] useMouseStore({ position, scale, hoveringElements }) and useMouseController
 [x] Images shaders (bubble and distort effect)
-[X] Images illustrations reveal on hover using noise
-[ ] Images illustrations reveal on hover using noise and sotre the data
+[x] Images illustrations reveal on hover using noise
+[x] Images illustrations reveal on hover using noise and sotre the data
 [ ] Scale awwward on hover and make url
 [ ] Docs
 
