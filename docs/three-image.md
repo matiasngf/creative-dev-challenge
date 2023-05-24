@@ -23,11 +23,11 @@ import { myFragmentShader, myVertexShader } from './my-shaders'
 />
 ```
 
-The default `fragmentShader`and `vertexShader` will just render the image in the 3D space. You can provide your own shaders to customize the look of the image.
+The default `fragmentShader`and `vertexShader` will render the image in the 3D space. You can provide your shaders to customize the look of the image.
 
 ## Writing custom image shaders
 
-There are some uniforms that are provided to the image shader by defualt:
+Some `uniforms` are provided to the image shader by default:
 
 ```glsl
 varying vec3 vNormal;
@@ -62,13 +62,13 @@ void main() {
 `
 ```
 
-_There are other shader utilities than can be found on [lib/utils](../src/lib/utils/)._
+_There are other shader utilities that ca be found on [lib/utils](../src/lib/utils/)._
 
 
-I created the effects on this site on shadertoy first to try them out:
+I created the effects on this site on Shadertoy first to try them out:
 
 * [Lens distortion, chromatic shift](https://www.shadertoy.com/view/DlV3DV)
-* [Simple distance based noise](https://www.shadertoy.com/view/cly3WV)
+* [Simple distance-based noise](https://www.shadertoy.com/view/cly3WV)
 
 ## Extra image maps
 
@@ -83,7 +83,7 @@ Other images can be loaded by using the `imageMaps` props, for example, if I wan
 />
 ```
 
-The default src is always the `imageTexture` uniform. The other images are loaded as textures and passed to the shader as uniforms, in this case, the `hoverTexture` uniform will be abailable on the shader.
+The default src is always the `imageTexture` uniform. The other images are loaded as textures and passed to the shader as uniforms. In this case, the `hoverTexture` uniform will be available on the shader.
 
 ## Custom image renderer
 

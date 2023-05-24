@@ -45,7 +45,7 @@ It will return the following object:
 }
 ```
 
-_The absoluteTop and absoluteLeft is calculating using the `useScrollStore`._
+_The absoluteTop and absoluteLeft are calculated using the `useScrollStore`._
 
 ## useMouseStore
 
@@ -82,7 +82,7 @@ const {
 
 [Source](../src/context/use-mouse.ts)
 
-This hook is used to register a hover event, and make the any effect bigger.
+This hook registers a hover event and makes any hover effect bigger by setting the `size` prop.
 
 ```tsx
 const { registerHoveredElement, removeHoveredElement } = useRegisterHover()
@@ -121,7 +121,7 @@ const { yScroll, yScrollRef } = useScrollStore();
 
 `yScroll`, the current scroll position. It will re-render the component every time it changes.
 
-`yScrollRef`, a ref that can be used to get the current scroll position without re-rendering the component (usefull for uniforms).
+`yScrollRef`, a ref that can be used to get the current scroll position without re-rendering the component (useful for uniforms).
 
 
 ## useScreenSizeStore
@@ -177,9 +177,9 @@ useEffect(() => {
 
 [Source](../src/context/use-tracked-element.ts)
 
-Main store used to track HTML elements into Three.js.
+The main store used to track HTML elements into Three.js.
 
-Usually it is only used via the `ThreePortal` component, but you can use it to manually connect a DOM element to Three.js.
+Usually, it is only used via the `ThreePortal` component, but you can manually connect a DOM element to Three.js.
 
 ```tsx
 const {

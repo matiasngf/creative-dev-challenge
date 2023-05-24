@@ -2,7 +2,7 @@
 
 [ThreePortal source](../src/components/common/three-portal/index.tsx)
 
-The experience I wanted to have when coding this site was to be able to seamlessly place 3D objects in the page as if they were part of the DOM. I wanted my code lo look like this:
+The experience I wanted to have when coding this site was to be able to seamlessly place 3D objects on the page as if they were part of the DOM. I wanted my code to look like this:
 
 ```tsx
 export const AwwwardTropy = () => {
@@ -35,11 +35,11 @@ const AwwwardThreeComponent = ({props, uniforms}) => {
 }
 ```
 
-This code automatically adds the `AwwwardThreeComponent` to the 3D scene, passing down props and unifroms provided in the portal.
+This code automatically adds the `AwwwardThreeComponent` to the 3D scene, passing down props and uniforms provided in the portal.
 
-In [this example](../src/app/sections/falling-caps/three-caps.tsx) the `CapTracker` element will be rendered on the dom, and the `CapPortal` will be added into the Three.js scene.
+In [this example](../src/app/sections/falling-caps/three-caps.tsx), the `CapTracker` element will be rendered on the dom, and the `CapPortal` will be added to the Three.js scene.
 
-## How does it works
+## How does it work
 
 ![tracker-diagram](./html-tracking.png)
 
@@ -51,7 +51,7 @@ Then, the [PortalTargetContainer](../src/components/common/three-portal/portal-t
 
 ## Example
 
-Lets imagine we have the following interfaces:
+Let's imagine we have the following interfaces:
 
 ```tsx
 interface CapPortalProps {
@@ -66,7 +66,7 @@ interface PortalUniforms {
 
 > Note: The `ThreePortal` element has a type system to check if the `renderer` has the same props that are passed to the portal.
 
-The Portal can be created like this
+The Portal can be created like this:
 
 ```tsx
 export const CapTracker = ({cap}) => {
@@ -106,8 +106,11 @@ export const CapTracker = ({cap}) => {
 Finally, the renderer can be created like this:
 
 ```tsx
+import type { TrackerRendererProps } from '~/context/use-tracked-element'
+import type { Uniforms } from '~/hooks/use-uniforms'
 
-type CapPortalProps = TrackerRendererProps<CapPortalProps, PortalUniforms>
+
+type CapPortalProps = TrackerRendererProps<CapPortalProps, Uniforms<PortalUniforms>>
 
 const CapPortal = ({props, uniforms}: CapPortalProps) => {
 

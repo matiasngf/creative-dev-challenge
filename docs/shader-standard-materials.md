@@ -1,6 +1,6 @@
 # [< ShaderStandardMaterials](./README.md)
 
-In order to apply custom shaders into `glb` models, we need to modify the `MeshStandardMaterial.onBeforeCompile` function. This was used to achieve the awwwards and cap reveals effects.
+To apply custom shaders into `glb` models, we need to modify the `MeshStandardMaterial.onBeforeCompile` function. This was used to achieve the awwwards and cap reveals effects.
 
 An example of this:
 
@@ -9,7 +9,7 @@ const { nodes } = useGLTF('/models/awwwards.glb') as AwwardGLTF
 
 const SceneNode = useMemo(() => {
 
-  // Cerate a new group what will store our objects
+  // Create a new group that will store our objects
   const Result = new Group()
 
   // Clone the origina scene
@@ -19,24 +19,24 @@ const SceneNode = useMemo(() => {
       child instanceof Mesh &&
       child.material instanceof MeshStandardMaterial
     ) {
-        // clone object and material
+        // Clone object and material
         const newObject = child.clone(true)
         const newMaterial = newObject.material.clone() as MeshStandardMaterial
 
-        // modify material with a custom compile function
+        // Modify material with a custom compile function
         newMaterial.onBeforeCompile = compileAwwwardShader(uniforms)
         newMaterial.needsUpdate = true
 
-        // important
+        // Important
         const randomId = Math.random().toString(36).substring(7)
         newMaterial.customProgramCacheKey = function () {
           return randomId
         }
 
-        // add edited material to object
+        // Add edited material to the object
         newObject.material = newMaterial
 
-        // add edited object to the group
+        // Add edited object to the group
         Result.add(newObject)
   })
   return Result
@@ -107,7 +107,7 @@ newMaterial.onBeforeCompile = compileAwwwardShader(uniforms)
 
 Because we are creating different compile functions, we want to tell Three.Js that each material shader is different and should be compiled separately.
 
-We can do this by creating a random id and assigning it to the `customProgramCacheKey` function.
+We can do this by assigning a random id to the `customProgramCacheKey` function.
 
 ```tsx
 const randomId = Math.random().toString(36).substring(7)
