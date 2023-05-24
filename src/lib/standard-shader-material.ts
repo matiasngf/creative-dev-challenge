@@ -3,11 +3,17 @@ import type { Shader } from 'three'
 import type { Uniforms } from '~/hooks/use-uniforms'
 
 export interface CompileOptions {
+  /**Extra uniforms provided to the shader */
   uniforms?: Uniforms
+  /**Code to be injected before the vertex shader's main function */
   vertexShaderBefore?: string
+  /**Code to be injected inside the vertex shader's main function */
   vertexShader?: string
+  /**Code to be injected before the fragment shader's main function */
   fragmentShaderBefore?: string
+  /**Code to be injected inside the fragment shader's main function */
   fragmentShader?: string
+  /**A custom function to modify the shader */
   compileShader?: (shader: Shader) => void
 }
 

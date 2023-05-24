@@ -4,6 +4,7 @@ import { Canvas } from '@react-three/fiber'
 import { clsx } from 'clsx'
 import type { ComponentProps, PropsWithChildren } from 'react'
 
+import { PortalTargetContainer } from '../three-portal/portal-target'
 import s from './canvas.module.scss'
 import { PrimaryScene } from './primary-scene'
 
@@ -18,6 +19,7 @@ export const AppCanvas = ({
     <>
       <Canvas className={clsx(className, s.main)} {...props}>
         <PrimaryScene>{children}</PrimaryScene>
+        <PortalTargetContainer />
       </Canvas>
     </>
   )

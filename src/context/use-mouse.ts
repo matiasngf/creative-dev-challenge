@@ -23,9 +23,8 @@ export interface MouseStore {
   hoveredElements: string[]
   /** Reference to the mouse position */
   ref: MousePositionRef
-
+  /** Size of the cursor */
   size: number
-
   /** Set the mouse position */
   setPosition: (x: number, y: number) => void
   /** Register hovered element */
