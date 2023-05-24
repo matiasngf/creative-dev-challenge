@@ -1,7 +1,6 @@
 import React from 'react'
 
 import { AppCanvas } from '~/components/common/canvas'
-import { PortalTargetContainer } from '~/components/common/three-portal/portal-target'
 
 import { FallingCaps } from './sections/falling-caps'
 import { FooterGallery } from './sections/footer-gallery'
@@ -15,9 +14,7 @@ const HomePage = () => {
       <Gallery />
       <FallingCaps />
       <FooterGallery />
-      <AppCanvas>
-        <PortalTargetContainer />
-      </AppCanvas>
+      <AppCanvas />
     </>
   )
 }
