@@ -18,20 +18,30 @@ import s from './caps.module.scss'
 
 export interface CapTrackerProps {
   cap: Cap
+  isFirst?: boolean
 }
 
 interface CapPortalProps {
   cap: Cap
+  isFirst?: boolean
   element: HTMLDivElement | null
 }
 
-export const CapTracker = ({ cap }: CapTrackerProps) => {
+export const CapTracker = ({ cap, isFirst }: CapTrackerProps) => {
   const ref = useRef<HTMLDivElement>(null)
 
   const [capProps, setCapProps] = useState<CapPortalProps>({
     cap,
-    element: ref.current
+    element: ref.current,
+    isFirst
   })
+
+  useEffect(() => {
+    setCapProps((s) => ({
+      ...s,
+      isFirst
+    }))
+  }, [isFirst])
 
   useEffect(() => {
     setCapProps((s) => ({
@@ -79,7 +89,7 @@ const smoothRandom = () => {
 export const CapPortal = ({
   props
 }: TrackerRendererProps<CapPortalProps, undefined>) => {
-  const { element } = props
+  const { element, isFirst } = props
   const rect = useClientRect(element)
 
   const [uniforms, updateUniforms] = useUniforms({
@@ -104,9 +114,10 @@ export const CapPortal = ({
   const randomStart = useMemo(() => {
     const numOfScreens = 4
     const min = 100 / numOfScreens
+    if (isFirst) return min
     const max = (100 / numOfScreens) * 3
     return smoothRandom() * (max - min) + min
-  }, [])
+  }, [isFirst])
 
   // tween
   const twRef = useRef<gsap.core.Tween | null>(null)

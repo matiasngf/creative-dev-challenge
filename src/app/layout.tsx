@@ -67,9 +67,9 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
         )}
       >
         <Header />
+        <AppHooks />
         {children}
         <Footer />
-        <AppHooks />
       </body>
     </html>
   )

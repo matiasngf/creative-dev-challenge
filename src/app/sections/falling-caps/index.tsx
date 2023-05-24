@@ -1,7 +1,8 @@
 'use client'
 
+import { gsap } from 'gsap'
 import Image from 'next/image'
-import React, { CSSProperties } from 'react'
+import React, { CSSProperties, useEffect, useRef } from 'react'
 
 import { Container } from '~/components/layout/container'
 
@@ -113,13 +114,56 @@ export const FallingCaps = () => {
       right: '1%'
     }
   ]
+
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const h2Ref = useRef<HTMLHeadingElement>(null)
+  const spanRef = useRef<HTMLSpanElement>(null)
+
+  useEffect(() => {
+    if (!h2Ref.current) return
+    if (!spanRef.current) return
+    if (!containerRef.current) return
+
+    const triggerEl = document.getElementById('#capsContainer')
+
+    const numOfScreens = 4
+    const start = 100 / numOfScreens
+
+    const t = gsap.to(h2Ref.current.style, {
+      opacity: 1,
+      duration: 1,
+      scrollTrigger: {
+        trigger: triggerEl,
+        // element, screen
+        start: start + '% bottom'
+      }
+    })
+    const t2 = gsap.to(spanRef.current.style, {
+      opacity: 1,
+      duration: 1,
+      scrollTrigger: {
+        trigger: triggerEl,
+        start: start + 20 + '% bottom'
+      }
+    })
+
+    return () => {
+      t.kill()
+      t2.kill()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [h2Ref.current, spanRef.current, containerRef.current])
+
   return (
-    <div id="#capsContainer" className={s.scrollContainer}>
+    <div id="#capsContainer" className={s.scrollContainer} ref={containerRef}>
       <Container className={s.container}>
-        <h2>
+        <h2 ref={h2Ref} style={{ opacity: 0 }}>
           We want to help make <br />
           the internet <br />
-          <span>everything it can be.</span>
+          <span ref={spanRef} style={{ opacity: 0 }}>
+            everything it can be.
+          </span>
         </h2>
         {cssCaps.map((style, index) => (
           <Image
@@ -134,7 +178,7 @@ export const FallingCaps = () => {
           />
         ))}
         {caps.map((cap, index) => (
-          <CapTracker key={index} cap={cap} />
+          <CapTracker key={index} cap={cap} isFirst={index === 0} />
         ))}
       </Container>
     </div>
