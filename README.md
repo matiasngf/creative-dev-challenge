@@ -1,10 +1,16 @@
 # Dev Creative Challenge
 
+## Solution
+
+[Process documentation](./docs/README.md)
+
+## Original challenge
+
 At basement we love to create amazing things, and we're excited to see what you can do with these tools. So get ready to give it your all and show off your skills! Are you ready for the challenge? Let's go!
 
 ![challenge](https://github.com/basementstudio/creative-dev-challenge/assets/8293146/cd156c97-ba79-464b-adc2-0f60aaaef8c2)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fbasementstudio%2Fcreative-dev-challenge&env=NEXT_PUBLIC_SITE_URL&envDescription=e.g%3A%20https%3A%2F%2Fproject-name.vercel.app)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmatiasngf%2Fcreative-dev-challenge&env=NEXT_PUBLIC_SITE_URL&envDescription=e.g%3A%20https%3A%2F%2Fproject-name.vercel.app)
 
 ## Featured Aspects of the Stack
 
